@@ -1923,17 +1923,40 @@ export default function App() {
                                     marginBottom: "16px",
                                     textAlign: "center"
                                 }}>
-                                    <label style={{
-                                        display: "block",
-                                        marginBottom: "8px",
-                                        fontWeight: "600",
-                                        fontSize: "0.95rem",
-                                        color: "var(--text-light)"
-                                    }}>
+                                    <label
+                                        htmlFor="slip-file-input"
+                                        style={{
+                                            display: "block",
+                                            marginBottom: "8px",
+                                            fontWeight: "600",
+                                            fontSize: "0.95rem",
+                                            color: "var(--text-light)",
+                                            cursor: "pointer"
+                                        }}
+                                    >
                                         อัปโหลดภาพสลิปเพื่อตรวจสอบยอดโอนจริง
                                     </label>
 
-                                    <div
+                                    <input
+                                        type="file"
+                                        id="slip-file-input"
+                                        accept="image/*"
+                                        style={{ display: "none" }}
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                if (slipPreviewUrl) {
+                                                    URL.revokeObjectURL(slipPreviewUrl);
+                                                }
+                                                setSlipFile(file);
+                                                setSlipPreviewUrl(URL.createObjectURL(file));
+                                            }
+                                            e.target.value = '';
+                                        }}
+                                    />
+
+                                    <label
+                                        htmlFor="slip-file-input"
                                         className="slip-dropzone"
                                         style={{
                                             border: "2px dashed rgba(251, 192, 45, 0.4)",
@@ -1947,58 +1970,76 @@ export default function App() {
                                             flexDirection: "column",
                                             alignItems: "center",
                                             justifyContent: "center",
-                                            minHeight: "120px"
+                                            minHeight: "120px",
+                                            width: "100%",
+                                            boxSizing: "border-box"
                                         }}
-                                        onClick={() => document.getElementById('slip-file-input').click()}
+                                        onDragOver={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }}
+                                        onDragEnter={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }}
+                                        onDrop={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            const file = e.dataTransfer.files[0];
+                                            if (file && file.type.startsWith('image/')) {
+                                                if (slipPreviewUrl) URL.revokeObjectURL(slipPreviewUrl);
+                                                setSlipFile(file);
+                                                setSlipPreviewUrl(URL.createObjectURL(file));
+                                            }
+                                        }}
                                     >
-                                        <input
-                                            type="file"
-                                            id="slip-file-input"
-                                            accept="image/*"
-                                            style={{ display: "none" }}
-                                            onChange={(e) => {
-                                                const file = e.target.files[0];
-                                                if (file) {
-                                                    setSlipFile(file);
-                                                    setSlipPreviewUrl(URL.createObjectURL(file));
-                                                }
-                                            }}
-                                        />
 
                                         {slipPreviewUrl ? (
-                                            <div style={{ position: "relative", width: "100%" }}>
+                                            <div
+                                                style={{
+                                                    position: "relative",
+                                                    width: "100%",
+                                                    textAlign: "center"
+                                                }}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                }}
+                                            >
                                                 <img
                                                     src={slipPreviewUrl}
                                                     alt="Slip Preview"
                                                     style={{
-                                                        maxHeight: "150px",
-                                                        borderRadius: "8px",
+                                                        display: "block",
+                                                        width: "100%",
+                                                        maxWidth: "280px",
+                                                        maxHeight: "200px",
+                                                        margin: "0 auto 8px auto",
+                                                        borderRadius: "10px",
                                                         objectFit: "contain",
-                                                        marginBottom: "8px",
-                                                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                                                        boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+                                                        border: "1px solid rgba(251,192,45,0.3)"
                                                     }}
                                                 />
-                                                <div style={{ fontSize: "0.85rem", color: "var(--text-muted)", wordBreak: "break-all" }}>
+                                                <div style={{
+                                                    fontSize: "0.8rem",
+                                                    color: "var(--text-muted)",
+                                                    wordBreak: "break-all",
+                                                    marginBottom: "4px"
+                                                }}>
                                                     {slipFile?.name} ({(slipFile ? (slipFile.size / 1024).toFixed(1) : 0)} KB)
                                                 </div>
                                                 <button
                                                     type="button"
                                                     style={{
-                                                        position: "absolute",
-                                                        top: "-8px",
-                                                        right: "-8px",
-                                                        width: "24px",
-                                                        height: "24px",
-                                                        borderRadius: "50%",
+                                                        marginTop: "6px",
+                                                        padding: "4px 12px",
+                                                        borderRadius: "20px",
                                                         backgroundColor: "var(--danger)",
                                                         color: "white",
                                                         border: "none",
                                                         cursor: "pointer",
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "center",
                                                         fontSize: "0.75rem",
-                                                        boxShadow: "0 2px 6px rgba(0,0,0,0.3)"
                                                     }}
                                                     onClick={(e) => {
                                                         e.stopPropagation();
@@ -2007,7 +2048,7 @@ export default function App() {
                                                         document.getElementById('slip-file-input').value = '';
                                                     }}
                                                 >
-                                                    <i className="fa-solid fa-xmark"></i>
+                                                    <i className="fa-solid fa-xmark" style={{ marginRight: "4px" }}></i>ลบรูป
                                                 </button>
                                             </div>
                                         ) : (
@@ -2025,7 +2066,7 @@ export default function App() {
                                                 </span>
                                             </>
                                         )}
-                                    </div>
+                                    </label>
                                 </div>
                                 <button type="submit" className="btn btn-success btn-block btn-lg" disabled={isVerifying}>
                                     {isVerifying ? (
