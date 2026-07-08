@@ -166,7 +166,7 @@ const DEFAULT_PRODUCTS = [
         name: "แอคปี 2015",
         price: 2500,
         category: "discord",
-        tag: "hot",
+        tag: "",
         description: "รายละเอียด: แอคเปล่า ไม่เคยใช้งานมาก่อน เปลี่ยนข้อมูลได้ เช่น เมล/รหัส + เบอร์ ซื้อไปเป็นแอคหลัก ควรเปลี่ยนเมล",
         svgType: "discord",
         imageUrl: "",
@@ -185,13 +185,25 @@ const DEFAULT_PRODUCTS = [
         stock: 99,
         stockItems: ["https://drive.google.com/drive/folders/mock-emoji-link"]
     },
+    {
+        id: "discord-nitro",
+        name: "Discord Nitro Classic (1 เดือน)",
+        price: 99,
+        category: "discord",
+        tag: "hot",
+        description: "รายละเอียด: ดิสคอร์ด ไนโตรคลาสสิก คีย์แท้ 100% เปิดใช้งานได้ทันทีเพื่อรับยศ สติ๊กเกอร์ และสิทธิพิเศษมากมาย",
+        svgType: "discord",
+        imageUrl: "",
+        stock: 5,
+        stockItems: ["nitro_classic_key_1", "nitro_classic_key_2"]
+    },
     // FiveM Category
     {
         id: "fivem-steam-empty",
         name: "สตรีมเปล่า",
         price: 5,
         category: "fivem",
-        tag: "",
+        tag: "hot",
         description: "รายละเอียด: เป็นสตรีมเปล่า ไม่เคยเชื่อมมาก่อน สะอาด ไม่เคยใช้งาน",
         svgType: "steam",
         imageUrl: "",
@@ -399,26 +411,19 @@ function ProductSVG({ type }) {
                 <svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="steamBg" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#171a21" />
-                            <stop offset="50%" stopColor="#1b2838" />
-                            <stop offset="100%" stopColor="#2a475e" />
+                            <stop offset="0%" stopColor="#101d2a" />
+                            <stop offset="100%" stopColor="#0b131c" />
                         </linearGradient>
-                        <linearGradient id="steamBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="#66c0f4" />
-                            <stop offset="100%" stopColor="#1b2838" />
+                        <linearGradient id="steamCircleBg" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stopColor="#172e43" />
+                            <stop offset="100%" stopColor="#101d2a" />
                         </linearGradient>
-                        <filter id="steamGlow">
-                            <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-                            <feMerge>
-                                <feMergeNode in="coloredBlur" />
-                                <feMergeNode in="SourceGraphic" />
-                            </feMerge>
-                        </filter>
                     </defs>
-                    <rect width="90" height="90" x="5" y="5" rx="14" fill="url(#steamBg)" stroke="rgba(102, 192, 244, 0.2)" strokeWidth="2" />
-                    <g transform="translate(10, 10) scale(0.8)">
-                        <path d="M49.9 8.2c-22.3 0-40.4 17.5-41.5 39.4l24.4 9.9c2.3-1.6 5.1-2.5 8.1-2.5 2.6 0 5 .7 7.1 1.8L69.8 44c.1-.8.2-1.7.2-2.5 0-14.7-11.9-26.6-26.6-26.6S16.8 26.8 16.8 41.5c0 5 1.4 9.6 3.8 13.5L3.8 47.9C4.8 24.3 24.1 5.3 48.2 5.3c24.7 0 44.8 20.1 44.8 44.8S72.9 94.9 48.2 94.9c-16.7 0-31.2-9.1-38.9-22.7L25 66.8c2.4 3.7 6.6 6.1 11.4 6.1 7.6 0 13.8-6.2 13.8-13.8 0-.8-.1-1.6-.2-2.4l21.2-12.7c1.7 1.1 3.7 1.7 5.9 1.7 6 0 10.9-4.9 10.9-10.9s-4.9-10.9-10.9-10.9-10.9 4.9-10.9 10.9c0 .7.1 1.4.2 2l-21.2 12.7c-2.3-1.8-5.3-2.9-8.5-2.9z"
-                            fill="url(#steamBlue)" filter="url(#steamGlow)" />
+                    <rect width="90" height="90" x="5" y="5" rx="14" fill="url(#steamBg)" stroke="rgba(102, 192, 244, 0.15)" strokeWidth="1.5" />
+                    <circle cx="50" cy="50" r="36" fill="url(#steamCircleBg)" />
+                    <g transform="translate(20, 20) scale(3.75)">
+                        <path d="M.329 10.333A8.01 8.01 0 0 0 7.99 16C12.414 16 16 12.418 16 8s-3.586-8-8.009-8A8.006 8.006 0 0 0 0 7.468l.003.006 4.304 1.769A2.2 2.2 0 0 1 5.62 8.88l1.96-2.844-.001-.04a3.046 3.046 0 0 1 3.042-3.043 3.046 3.046 0 0 1 3.042 3.043 3.047 3.047 0 0 1-3.111 3.044l-2.804 2a2.223 2.223 0 0 1-3.075 2.11 2.22 2.22 0 0 1-1.312-1.568L.33 10.333Z" fill="#ffffff" />
+                        <path d="M4.868 12.683a1.715 1.715 0 0 0 1.318-3.165 1.7 1.7 0 0 0-1.263-.02l1.023.424a1.261 1.261 0 1 1-.97 2.33l-.99-.41a1.7 1.7 0 0 0 .882.84Zm3.726-6.687a2.03 2.03 0 0 0 2.027 2.029 2.03 2.03 0 0 0 2.027-2.029 2.03 2.03 0 0 0-2.027-2.027 2.03 2.03 0 0 0-2.027 2.027m2.03-1.527a1.524 1.524 0 1 1-.002 3.048 1.524 1.524 0 0 1 .002-3.048" fill="#ffffff" />
                     </g>
                 </svg>
             );
@@ -467,11 +472,20 @@ function ProductSVG({ type }) {
                     </g>
                 </svg>
             );
+        case 'others':
         default:
             return (
                 <svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="50" cy="50" r="45" fill="var(--primary-light)" stroke="var(--primary)" strokeWidth="2" />
-                    <text x="50" y="54" fontSize="9" textAnchor="middle" fill="var(--primary)" fontWeight="bold">PB SERVICES</text>
+                    <defs>
+                        <linearGradient id="othersBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#2c3e50" />
+                            <stop offset="100%" stopColor="#1a252f" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="80" height="80" x="10" y="10" rx="12" fill="url(#othersBg)" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="2" />
+                    <g transform="translate(25, 25) scale(0.09765625)" fill="#ffffff">
+                        <path d="M224 0l0 64c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-64 32 0c35.3 0 64 28.7 64 64l0 128c0 5.5-.7 10.9-2 16l-252 0c-1.3-5.1-2-10.5-2-16l0-128c0-35.3 28.7-64 64-64l32 0zm96 512c-11.2 0-21.8-2.9-31-8 9.5-16.5 15-35.6 15-56l0-128c0-20.4-5.5-39.5-15-56 9.2-5.1 19.7-8 31-8l32 0 0 64c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-64 32 0c35.3 0 64 28.7 64 64l0 128c0 35.3-28.7 64-64 64l-128 0zM0 320c0-35.3 28.7-64 64-64l32 0 0 64c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-64 32 0c35.3 0 64 28.7 64 64l0 128c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 320z" />
+                    </g>
                 </svg>
             );
     }
@@ -481,6 +495,79 @@ function ProductSVG({ type }) {
 // App Core Component
 // --------------------------------------------------------------------------
 export default function App() {
+    // Supabase Configuration
+    const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || "https://eguwkutijgqxaosjshgn.supabase.co";
+    const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || "sb_publishable_bhwPJpSNONc34HH7Z6s3Bw_N2dZERMd";
+    
+    const supabaseHeaders = {
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Content-Type": "application/json",
+        "Prefer": "return=representation"
+    };
+
+    const fetchChatsFromSupabase = async () => {
+        try {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/chats?order=created_at.asc`, {
+                headers: supabaseHeaders
+            });
+            if (response.ok) {
+                const dbChats = await response.json();
+                const mapped = {};
+                dbChats.forEach(row => {
+                    const user = row.username;
+                    if (!mapped[user]) {
+                        mapped[user] = [];
+                    }
+                    
+                    let text = row.message;
+                    let attachment = null;
+                    
+                    if (text.startsWith("{") && text.endsWith("}")) {
+                        try {
+                            const parsed = JSON.parse(text);
+                            text = parsed.text || "";
+                            attachment = parsed.attachment || null;
+                        } catch (e) {
+                            // ignore and use as plain text
+                        }
+                    }
+                    
+                    mapped[user].push({
+                        sender: row.is_admin ? "admin" : (text.startsWith("ยินดีต้อนรับ") ? "system" : "user"),
+                        text,
+                        attachment,
+                        timestamp: new Date(row.created_at).getTime()
+                    });
+                });
+                return mapped;
+            }
+        } catch (error) {
+            console.error("Error fetching chats from Supabase:", error);
+        }
+        return null;
+    };
+
+    const insertSupabaseChat = async (username, text, attachment, isAdmin) => {
+        try {
+            const messageBody = JSON.stringify({
+                text: text,
+                attachment: attachment
+            });
+            await fetch(`${SUPABASE_URL}/rest/v1/chats`, {
+                method: "POST",
+                headers: supabaseHeaders,
+                body: JSON.stringify({
+                    username: username.toLowerCase(),
+                    message: messageBody,
+                    is_admin: isAdmin
+                })
+            });
+        } catch (error) {
+            console.error("Error inserting chat to Supabase:", error);
+        }
+    };
+
     // 1. Storage Synced States
     const [users, setUsers] = useState(() => {
         const stored = loadStoredJson("x24_users", DEFAULT_USERS);
@@ -505,8 +592,8 @@ export default function App() {
     });
     const [products, setProducts] = useState(() => {
         let stored = loadStoredJson("x24_products", null);
-        // Force refresh / overwrite if no products or old defaults are loaded
-        if (!stored || stored.some(p => p.id === 'prod-fivem-1' || p.id === 'prod-discord-1')) {
+        // Force refresh / overwrite if no products, old defaults, or the new discord-nitro or steam hot product is missing
+        if (!stored || stored.some(p => p.id === 'prod-fivem-1' || p.id === 'prod-discord-1') || !stored.some(p => p.id === 'discord-nitro') || !stored.some(p => p.id === 'fivem-steam-empty' && p.tag === 'hot')) {
             stored = DEFAULT_PRODUCTS;
             localStorage.setItem("x24_products", JSON.stringify(stored));
         }
@@ -572,6 +659,7 @@ export default function App() {
     // Admin Dashboard States
     const [activeAdminTab, setActiveAdminTab] = useState('dashboard');
     const [activeChatThread, setActiveChatThread] = useState('');
+    const [promoCodes, setPromoCodes] = useState([]);
 
     // Donation States
     const [donateChannel, setDonateChannel] = useState('promptpay');
@@ -698,16 +786,18 @@ export default function App() {
 
     }, []);
 
-    // Countdown Timer Effect for PromptPay payments
+    // Countdown Timer Effect for PromptPay & TrueMoney Wallet payments
     useEffect(() => {
         const path = route.split('?')[0];
-        if (path === '#/donate' && donateChannel === 'promptpay') {
+        if (path === '#/donate' && (donateChannel === 'promptpay' || donateChannel === 'truewallet')) {
             setTimeLeft(600); // Reset to 10 minutes (600 seconds)
             
             const interval = setInterval(() => {
                 setTimeLeft(prev => {
                     if (prev <= 1) {
                         clearInterval(interval);
+                        window.location.hash = "#/";
+                        showToast("หมดเวลาทำรายการ ระบบนำท่านกลับสู่หน้าหลัก", "warning");
                         return 0;
                     }
                     return prev - 1;
@@ -763,6 +853,40 @@ export default function App() {
             adminChatFeedRef.current.scrollTop = adminChatFeedRef.current.scrollHeight;
         }
     }, [activeAdminTab, chats, activeChatThread]);
+
+    // Supabase Chats Polling Sync Effect
+    useEffect(() => {
+        const syncChats = async () => {
+            const remoteChats = await fetchChatsFromSupabase();
+            if (remoteChats) {
+                setChats(remoteChats);
+            }
+        };
+        syncChats(); // run immediately
+
+        const interval = setInterval(syncChats, 3000);
+        return () => clearInterval(interval);
+    }, []);
+
+    // Promo Codes List Loader for Admin
+    useEffect(() => {
+        if (activeAdminTab === 'promo_codes') {
+            const loadPromoCodes = async () => {
+                try {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/promo_codes?order=created_at.desc`, {
+                        headers: supabaseHeaders
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        setPromoCodes(data);
+                    }
+                } catch (err) {
+                    console.error("Error loading promo codes:", err);
+                }
+            };
+            loadPromoCodes();
+        }
+    }, [activeAdminTab]);
 
     // --------------------------------------------------------------------------
     // Global Helper Actions
@@ -968,8 +1092,13 @@ export default function App() {
 
         const checkBtn = e.target.querySelector("button[type='submit']");
 
-        // Handle PromptPay slip verification via Backend if a file is selected
-        if (donateChannel === 'promptpay' && slipFile) {
+        // PromptPay: ต้องแนบสลิปจริงเท่านั้น
+        if (donateChannel === 'promptpay') {
+            if (!slipFile) {
+                showToast("กรุณาอัปโหลดสลิปการโอนเงินก่อนกดยืนยัน", "error");
+                return;
+            }
+
             if (checkBtn) {
                 checkBtn.disabled = true;
                 checkBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบสลิปการโอน...`;
@@ -1040,61 +1169,154 @@ export default function App() {
             return;
         }
 
-        // Original fallback flow (Simulated/Mock Check)
-        if (checkBtn) {
-            checkBtn.disabled = true;
-            checkBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบยอดโอนจำลอง...`;
-        }
-
-        setTimeout(() => {
-            let addAmt = selectedDonateAmount;
-            let successMsg = '';
-
-            if (donateChannel === 'promptpay') {
-                successMsg = `เติมเงินสำเร็จ ${selectedDonateAmount} บาท ผ่าน PromptPay QR! (โหมดจำลอง)`;
-            } else if (donateChannel === 'truewallet') {
-                const phone = document.getElementById("wallet-phone")?.value || '08x-xxx-xxxx';
-                successMsg = `เติมเงินสำเร็จ ${selectedDonateAmount} บาท ผ่าน TrueWallet โทร ${phone}!`;
-            } else if (donateChannel === 'cashcard') {
-                const pin = document.getElementById("cashcard-pin")?.value || '';
-                if (pin.length !== 14) {
-                    showToast("กรุณากรอกรหัสบัตรเงินสด 14 หลักให้ครบถ้วน", "error");
-                    if (checkBtn) {
-                        checkBtn.disabled = false;
-                        checkBtn.innerHTML = `<i class="fa-solid fa-wallet"></i> เติมเงินทันที`;
-                    }
-                    return;
-                }
-                addAmt = 85.00; // Deduct 15% mockup fee
-                successMsg = `เติมเงินสำเร็จ! บัตรทรูมันนี่มูลค่า 100 บาท (หักค่าธรรมเนียม เหลือเครดิต ${addAmt} บาท)`;
+        // TrueWallet: ต้องใส่ลิ้งก์ซอง
+        if (donateChannel === 'truewallet') {
+            const giftUrl = document.getElementById("truemoney-gift-url")?.value?.trim();
+            if (!giftUrl) {
+                showToast("กรุณาวางลิ้งก์ซอง TrueMoney ก่อนกดยืนยัน", "error");
+                return;
             }
+            if (!giftUrl.includes("gift.truemoney.com")) {
+                showToast("ลิ้งก์ไม่ถูกต้อง กรุณาใช้ลิ้งก์จาก gift.truemoney.com", "error");
+                return;
+            }
+
+            // Extract voucher code from URL
+            let voucherCode = '';
+            try {
+                const urlObj = new URL(giftUrl);
+                voucherCode = urlObj.searchParams.get('v') || giftUrl.split('v=')[1]?.split('&')[0] || '';
+            } catch (_) {
+                voucherCode = giftUrl.split('v=')[1]?.split('&')[0] || '';
+            }
+
+            if (!voucherCode || voucherCode.length < 8) {
+                showToast("ไม่พบรหัสซองในลิ้งก์ กรุณาตรวจสอบ URL อีกครั้ง", "error");
+                return;
+            }
+
+            if (checkBtn) {
+                checkBtn.disabled = true;
+                checkBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบซอง...`;
+            }
+            setIsVerifying(true);
+
+            // Simulate processing delay then add balance
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            const addAmt = selectedDonateAmount;
+            const refNumber = "TM-" + voucherCode.slice(0, 8).toUpperCase();
 
             setCurrentUser(prev => ({ ...prev, balance: prev.balance + addAmt }));
 
-            // Add Refill log to orders
             const topupOrder = {
                 orderId: "X24-" + Math.floor(10000 + Math.random() * 90000),
                 username: currentUser.username,
-                items: [
-                    { id: "refill", name: `เติมเงินผ่าน ${donateChannel.toUpperCase()} (จำลอง)`, price: addAmt, qty: 1 }
-                ],
+                items: [{ id: "refill", name: `เติมเงินผ่าน TrueMoney Gift (${refNumber})`, price: addAmt, qty: 1 }],
                 totalPrice: addAmt,
                 date: Date.now(),
                 status: "Completed"
             };
             setOrders(prev => [...prev, topupOrder]);
 
-            showToast(successMsg);
-            window.location.hash = "#/profile";
+            showToast(`เติมเงินสำเร็จ ${addAmt} บาท ผ่านซอง TrueMoney! (รหัส: ${refNumber})`, "success");
 
+            if (document.getElementById("truemoney-gift-url")) {
+                document.getElementById("truemoney-gift-url").value = '';
+            }
+
+            setIsVerifying(false);
             if (checkBtn) {
                 checkBtn.disabled = false;
-                checkBtn.innerHTML = donateChannel === 'promptpay' ? `<i class="fa-solid fa-square-check"></i> ตรวจสอบยอดเงิน (จำลองการโอน)` : `<i class="fa-solid fa-wallet"></i> เติมเงินทันที`;
+                checkBtn.innerHTML = `<i class="fa-solid fa-gift"></i> ยืนยันซองและเติมเงิน`;
             }
-        }, 1500);
+
+            window.location.hash = "#/profile";
+            return;
+        }
+
+        if (donateChannel === 'cashcard') {
+            const codeInput = document.getElementById("redeem-code-input")?.value?.trim();
+            if (!codeInput) {
+                showToast("กรุณากรอกโค้ดรับพ้อยก่อนกดยืนยัน", "error");
+                return;
+            }
+
+            if (checkBtn) {
+                checkBtn.disabled = true;
+                checkBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบโค้ด...`;
+            }
+            setIsVerifying(true);
+
+            try {
+                // Fetch the code from Supabase promo_codes table
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/promo_codes?code=eq.${codeInput}`, {
+                    headers: supabaseHeaders
+                });
+                
+                if (!response.ok) {
+                    throw new Error("ไม่สามารถเชื่อมต่อฐานข้อมูลได้");
+                }
+
+                const data = await response.json();
+                if (data && data.length > 0) {
+                    const promo = data[0];
+                    
+                    if (promo.is_redeemed) {
+                        showToast(`โค้ดนี้ถูกใช้งานไปแล้วโดยผู้ใช้ ${promo.redeemed_by}`, "error");
+                    } else {
+                        // Mark as redeemed
+                        const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/promo_codes?id=eq.${promo.id}`, {
+                            method: "PATCH",
+                            headers: supabaseHeaders,
+                            body: JSON.stringify({
+                                is_redeemed: true,
+                                redeemed_by: currentUser.username
+                            })
+                        });
+
+                        if (updateResponse.ok) {
+                            const addAmt = parseFloat(promo.points) || 0;
+                            setCurrentUser(prev => ({ ...prev, balance: prev.balance + addAmt }));
+
+                            // Add log to orders
+                            const topupOrder = {
+                                orderId: "X24-" + Math.floor(10000 + Math.random() * 90000),
+                                username: currentUser.username,
+                                items: [{ id: "promo_code", name: `ใช้งานโค้ดรับพ้อย: ${codeInput}`, price: addAmt, qty: 1 }],
+                                totalPrice: addAmt,
+                                date: Date.now(),
+                                status: "Completed"
+                            };
+                            setOrders(prev => [...prev, topupOrder]);
+
+                            showToast(`เปิดใช้งานโค้ดสำเร็จ! ได้รับเครดิต ${addAmt} บาท`, "success");
+                            if (document.getElementById("redeem-code-input")) {
+                                document.getElementById("redeem-code-input").value = '';
+                            }
+                        } else {
+                            showToast("เกิดข้อผิดพลาดในการทำรายการ กรุณาลองใหม่", "error");
+                        }
+                    }
+                } else {
+                    showToast("ไม่พบโค้ดนี้ในระบบ กรุณาตรวจสอบความถูกต้อง", "error");
+                }
+            } catch (error) {
+                console.error("Error redeeming code:", error);
+                showToast("ไม่สามารถทำรายการได้ในขณะนี้ กรุณาติดต่อแอดมิน", "error");
+            } finally {
+                setIsVerifying(false);
+                if (checkBtn) {
+                    checkBtn.disabled = false;
+                    checkBtn.innerHTML = `<i class="fa-solid fa-ticket"></i> เปิดใช้งานโค้ด`;
+                }
+            }
+            return;
+        }
     };
 
     // Client Chat Message Submission
+
     const handleClientSendMsg = async (e) => {
         e.preventDefault();
         if (!currentUser) return;
@@ -1123,15 +1345,7 @@ export default function App() {
             timestamp: Date.now()
         };
 
-        setChats(prev => {
-            const updated = { ...prev, [user]: [...thread, newMsg] };
-            localStorage.setItem("x24_chats", JSON.stringify(updated));
-            return updated;
-        });
-
-        // Storage notification
-        localStorage.setItem("x24_chat_update_time", Date.now().toString());
-        localStorage.setItem("x24_unread_admin_" + user, "1");
+        await insertSupabaseChat(user, text, attachment, false);
 
         if (input) input.value = '';
         if (fileInput) fileInput.value = '';
@@ -1141,81 +1355,77 @@ export default function App() {
     };
 
     const simulateBotReply = (username, text) => {
-        setTimeout(() => {
-            const currentChats = loadStoredJson("x24_chats", {});
-            const thread = currentChats[username] || [];
-            const last = thread[thread.length - 1];
+        setTimeout(async () => {
+            const remoteChats = await fetchChatsFromSupabase();
+            if (remoteChats) {
+                const thread = remoteChats[username] || [];
+                const last = thread[thread.length - 1];
 
-            if (last && last.sender === "user") {
-                const auto = {
-                    sender: "admin",
-                    text: `[ระบบตอบกลับอัตโนมัติ] ขอบคุณสำหรับข้อความ: "${text}" ขณะนี้เจ้าหน้าที่ได้รับเรื่องแล้ว จะรีบเข้ามาตอบแชทโดยเร็วที่สุดค่ะ`,
-                    timestamp: Date.now()
-                };
-
-                setChats(prev => {
-                    const updated = { ...prev, [username]: [...(prev[username] || []), auto] };
-                    localStorage.setItem("x24_chats", JSON.stringify(updated));
-                    localStorage.setItem("x24_unread_client", "1");
-                    return updated;
-                });
-                localStorage.setItem("x24_chat_update_time", Date.now().toString());
+                if (last && last.sender === "user") {
+                    await insertSupabaseChat(
+                        username,
+                        `[ระบบตอบกลับอัตโนมัติ] ขอบคุณสำหรับข้อความ: "${text}" ขณะนี้เจ้าหน้าที่ได้รับเรื่องแล้ว จะรีบเข้ามาตอบแชทโดยเร็วที่สุดค่ะ`,
+                        null,
+                        true
+                    );
+                }
             }
         }, 6000);
     };
 
     // Client Chat ticket creation
-    const handleClientCreateTicket = () => {
+    const handleClientCreateTicket = async () => {
         if (!currentUser) return;
         const user = currentUser.username;
-        const welcomeMsg = {
-            sender: "system",
-            text: "ยินดีต้อนรับเข้าสู่ PB SERVICES Live Support! เจ้าหน้าที่ได้รับตั๋วสนทนาของท่านแล้ว กรุณาพิมพ์ทิ้งคำถามหรือข้อสงสัยไว้ได้เลยค่ะ",
-            timestamp: Date.now()
-        };
-        setChats(prev => {
-            const updated = { ...prev, [user]: [welcomeMsg] };
-            localStorage.setItem("x24_chats", JSON.stringify(updated));
-            return updated;
-        });
-        localStorage.setItem("x24_chat_update_time", Date.now().toString());
-        localStorage.setItem("x24_unread_admin_" + user, "1");
+        const welcomeText = "ยินดีต้อนรับเข้าสู่ PB SERVICES Live Support! เจ้าหน้าที่ได้รับตั๋วสนทนาของท่านแล้ว กรุณาพิมพ์ทิ้งคำถามหรือข้อสงสัยไว้ได้เลยค่ะ";
+        
+        await insertSupabaseChat(user, welcomeText, null, false);
         showToast("เปิดตั๋วติดต่อแอดมินสำเร็จแล้วค่ะ");
     };
 
     // Client Chat ticket close/delete
-    const handleClientCloseChat = () => {
+    const handleClientCloseChat = async () => {
         if (!currentUser) return;
         const user = currentUser.username;
         if (window.confirm("คุณต้องการปิดแชทนี้และลบประวัติการสนทนาทั้งหมดในระบบหรือไม่? (ข้อมูลจะหายไปทั้งหมด)")) {
-            setChats(prev => {
-                const updated = { ...prev };
-                delete updated[user];
-                localStorage.setItem("x24_chats", JSON.stringify(updated));
-                return updated;
-            });
-            localStorage.removeItem("x24_unread_client");
-            localStorage.removeItem("x24_unread_admin_" + user);
-            localStorage.setItem("x24_chat_update_time", Date.now().toString());
-            showToast("ปิดห้องสนทนาสำเร็จและลบข้อมูลเรียบร้อยแล้วค่ะ");
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/chats?username=eq.${user.toLowerCase()}`, {
+                    method: "DELETE",
+                    headers: supabaseHeaders
+                });
+                setChats(prev => {
+                    const updated = { ...prev };
+                    delete updated[user];
+                    return updated;
+                });
+                showToast("ปิดห้องสนทนาสำเร็จและลบข้อมูลเรียบร้อยแล้วค่ะ");
+            } catch (error) {
+                console.error("Error closing chat:", error);
+                showToast("ไม่สามารถปิดห้องสนทนาได้ในขณะนี้", "error");
+            }
         }
     };
 
     // Admin Chat ticket close/delete
-    const handleAdminCloseChat = (username) => {
+    const handleAdminCloseChat = async (username) => {
         if (!username) return;
         if (window.confirm(`ยืนยันการปิดตั๋วสนทนากับคุณ ${username} และลบประวัติทั้งหมดออกจากระบบ?`)) {
-            setChats(prev => {
-                const updated = { ...prev };
-                delete updated[username];
-                localStorage.setItem("x24_chats", JSON.stringify(updated));
-                return updated;
-            });
-            localStorage.removeItem("x24_unread_client");
-            localStorage.removeItem("x24_unread_admin_" + username);
-            localStorage.setItem("x24_chat_update_time", Date.now().toString());
-            setActiveChatThread('');
-            showToast(`ปิดตั๋วสนทนาของ ${username} และลบประวัติสำเร็จ`);
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/chats?username=eq.${username.toLowerCase()}`, {
+                    method: "DELETE",
+                    headers: supabaseHeaders
+                });
+                setChats(prev => {
+                    const updated = { ...prev };
+                    delete updated[username];
+                    return updated;
+                });
+                setActiveChatThread('');
+                showToast(`ปิดตั๋วสนทนาของ ${username} และลบประวัติสำเร็จ`);
+            } catch (error) {
+                console.error("Error closing admin chat:", error);
+                showToast("ไม่สามารถปิดห้องสนทนาได้ในขณะนี้", "error");
+            }
         }
     };
 
@@ -1238,39 +1448,89 @@ export default function App() {
             return;
         }
 
-        const thread = chats[activeChatThread] || [];
+        // Insert to Supabase as admin reply
+        await insertSupabaseChat(activeChatThread, text, attachment, true);
 
-        const newMsg = {
-            sender: "admin",
-            text: text,
-            attachment,
-            timestamp: Date.now()
-        };
-
-        setChats(prev => {
-            const updated = { ...prev, [activeChatThread]: [...thread, newMsg] };
-            localStorage.setItem("x24_chats", JSON.stringify(updated));
-            return updated;
-        });
-
-        localStorage.setItem("x24_chat_update_time", Date.now().toString());
-        localStorage.setItem("x24_unread_client", "1");
         if (input) input.value = '';
         if (fileInput) fileInput.value = '';
     };
 
     // Clean admin chat history
-    const handleAdminClearChat = (username) => {
+    const handleAdminClearChat = async (username) => {
         if (window.confirm(`ยืนยันการล้างบทสนทนากับคุณ ${username}?`)) {
-            setChats(prev => {
-                const updated = {
-                    ...prev,
-                    [username]: [{ sender: "system", text: "ลบประวัติการแชทโดยผู้ดูแลระบบ", timestamp: Date.now() }]
-                };
-                localStorage.setItem("x24_chats", JSON.stringify(updated));
-                return updated;
+            try {
+                // Delete existing chat history
+                await fetch(`${SUPABASE_URL}/rest/v1/chats?username=eq.${username.toLowerCase()}`, {
+                    method: "DELETE",
+                    headers: supabaseHeaders
+                });
+                
+                // Re-insert system welcome message to keep the ticket active
+                const welcomeText = "ยินดีต้อนรับเข้าสู่ PB SERVICES Live Support! (ประวัติเดิมถูกล้างโดยผู้ดูแลระบบ)";
+                await insertSupabaseChat(username, welcomeText, null, false);
+                
+                showToast("ล้างประวัติบทสนทนาเรียบร้อยแล้วค่ะ");
+            } catch (error) {
+                console.error("Error clearing chat:", error);
+                showToast("ไม่สามารถล้างประวัติได้ในขณะนี้", "error");
+            }
+        }
+    };
+
+    // Admin promo codes creation handler
+    const handleAdminCreatePromoCode = async (e) => {
+        e.preventDefault();
+        const code = document.getElementById("admin-promo-code")?.value?.trim()?.toUpperCase();
+        const points = parseFloat(document.getElementById("admin-promo-points")?.value) || 0;
+
+        if (!code || points <= 0) {
+            showToast("กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง", "warning");
+            return;
+        }
+
+        try {
+            // Check if code already exists in Supabase
+            const checkRes = await fetch(`${SUPABASE_URL}/rest/v1/promo_codes?code=eq.${code}`, {
+                headers: supabaseHeaders
             });
-            localStorage.setItem("x24_chat_update_time", Date.now().toString());
+            const existing = await checkRes.json();
+            if (existing && existing.length > 0) {
+                showToast("โค้ดนี้มีอยู่ในระบบแล้ว กรุณาใช้ชื่อโค้ดอื่น", "error");
+                return;
+            }
+
+            // Insert new code into Supabase
+            const res = await fetch(`${SUPABASE_URL}/rest/v1/promo_codes`, {
+                method: "POST",
+                headers: supabaseHeaders,
+                body: JSON.stringify({
+                    code,
+                    points,
+                    is_redeemed: false
+                })
+            });
+
+            if (res.ok) {
+                showToast("สร้างโค้ดรับพ้อยสำเร็จ!", "success");
+                
+                // Clear inputs
+                if (document.getElementById("admin-promo-code")) document.getElementById("admin-promo-code").value = '';
+                if (document.getElementById("admin-promo-points")) document.getElementById("admin-promo-points").value = '';
+                
+                // Reload list
+                const loadRes = await fetch(`${SUPABASE_URL}/rest/v1/promo_codes?order=created_at.desc`, {
+                    headers: supabaseHeaders
+                });
+                if (loadRes.ok) {
+                    const data = await loadRes.json();
+                    setPromoCodes(data);
+                }
+            } else {
+                showToast("ไม่สามารถสร้างโค้ดได้ในขณะนี้", "error");
+            }
+        } catch (err) {
+            console.error("Error creating promo code:", err);
+            showToast("เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล", "error");
         }
     };
 
@@ -1381,7 +1641,15 @@ export default function App() {
 
     // 1. HOME VIEW
     const HomeView = () => {
-        const featured = products.filter(p => p.status !== 'inactive' && (p.tag === 'hot' || p.tag === 'popular')).slice(0, 4);
+        const featured = [];
+        const seenSvgTypes = new Set();
+        for (const p of products) {
+            if (p.status !== 'inactive' && p.svgType && !seenSvgTypes.has(p.svgType)) {
+                featured.push(p);
+                seenSvgTypes.add(p.svgType);
+                if (featured.length === 4) break;
+            }
+        }
 
         return (
             <>
@@ -1455,7 +1723,7 @@ export default function App() {
 
                 <section style={{ marginBottom: "50px" }}>
                     <div className="section-header">
-                        <h2>สินค้าแนะนำยอดนิยม</h2>
+                        <h2>สินค้าเเนะนำ</h2>
                         <a href="#/products" className="view-all-link">ดูสินค้าทั้งหมด <i className="fa-solid fa-arrow-right"></i></a>
                     </div>
                     <div className="products-grid">
@@ -1473,15 +1741,15 @@ export default function App() {
                         <div className="stat-card">
                             <div className="stat-icon"><i className="fa-solid fa-users"></i></div>
                             <div className="stat-info">
-                                <h3>{users.length + 342} +</h3>
-                                <p>ผู้ใช้ออนไลน์ลงทะเบียน</p>
+                                <h3>{users.length} คน</h3>
+                                <p>ลูกค้าลงทะเบียนใช้งาน</p>
                             </div>
                         </div>
                         <div className="stat-card">
-                            <div className="stat-icon" style={{ color: "var(--secondary)", backgroundColor: "rgba(49, 151, 149, 0.1)" }}><i className="fa-solid fa-cart-flatbed-suitcases"></i></div>
+                            <div className="stat-icon" style={{ color: "var(--secondary)", backgroundColor: "rgba(49, 151, 149, 0.1)" }}><i className="fa-solid fa-bag-shopping"></i></div>
                             <div className="stat-info">
-                                <h3>{orders.length + 1583} +</h3>
-                                <p>คำสั่งซื้อที่ทำรายการสำเร็จ</p>
+                                <h3>{new Set(orders.map(o => o.username)).size} คน</h3>
+                                <p>จำนวนลูกค้าที่สั่งซื้อสินค้า</p>
                             </div>
                         </div>
                         <div className="stat-card">
@@ -1838,20 +2106,20 @@ export default function App() {
             <div className="donate-layout">
                 <div className="donate-card">
                     <h2>โดเนทสนับสนุน & เติมเครดิต</h2>
-                    <p>ระบบเติมเงินจำลอง รองรับช่องทาง PromptPay QR code, ทรูมันนี่วอลเล็ท และบัตรเงินสด</p>
+                    <p>ระบบเติมเงินจำลอง รองรับช่องทาง PromptPay QR code, ทรูมันนี่วอลเล็ท และระบบกรอกโค้ดรับพ้อย</p>
 
                     <div className="payment-tabs">
                         <button className={`payment-tab-btn ${donateChannel === 'promptpay' ? 'active' : ''}`} onClick={() => setDonateChannel('promptpay')}>
-                            <i class="fa-solid fa-qrcode"></i>
+                            <i className="fa-solid fa-qrcode"></i>
                             <span>PromptPay QR</span>
                         </button>
                         <button className={`payment-tab-btn ${donateChannel === 'truewallet' ? 'active' : ''}`} onClick={() => setDonateChannel('truewallet')}>
-                            <i class="fa-solid fa-mobile-screen-button"></i>
+                            <i className="fa-solid fa-mobile-screen-button"></i>
                             <span>TrueMoney Wallet</span>
                         </button>
                         <button className={`payment-tab-btn ${donateChannel === 'cashcard' ? 'active' : ''}`} onClick={() => setDonateChannel('cashcard')}>
-                            <i class="fa-solid fa-credit-card"></i>
-                            <span>บัตรเงินสดทรูมันนี่</span>
+                            <i className="fa-solid fa-ticket"></i>
+                            <span>กรอกโค้ดรับพ้อย</span>
                         </button>
                     </div>
 
@@ -1991,36 +2259,36 @@ export default function App() {
                                                 setSlipFile(file);
                                                 setSlipPreviewUrl(URL.createObjectURL(file));
                                             }
-                                        }}
-                                    >
+                                         }}
+                                     >
 
-                                        {slipPreviewUrl ? (
-                                            <div
-                                                style={{
-                                                    position: "relative",
-                                                    width: "100%",
-                                                    textAlign: "center"
-                                                }}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                }}
-                                            >
-                                                <img
-                                                    src={slipPreviewUrl}
-                                                    alt="Slip Preview"
-                                                    style={{
-                                                        display: "block",
-                                                        width: "100%",
-                                                        maxWidth: "280px",
-                                                        maxHeight: "200px",
-                                                        margin: "0 auto 8px auto",
-                                                        borderRadius: "10px",
-                                                        objectFit: "contain",
-                                                        boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
-                                                        border: "1px solid rgba(251,192,45,0.3)"
-                                                    }}
-                                                />
+                                         {slipPreviewUrl ? (
+                                             <div
+                                                 style={{
+                                                     position: "relative",
+                                                     width: "100%",
+                                                     textAlign: "center"
+                                                 }}
+                                                 onClick={(e) => {
+                                                     e.preventDefault();
+                                                     e.stopPropagation();
+                                                 }}
+                                             >
+                                                 <img
+                                                     src={slipPreviewUrl}
+                                                     alt="Slip Preview"
+                                                     style={{
+                                                         display: "block",
+                                                         width: "100%",
+                                                         maxWidth: "280px",
+                                                         maxHeight: "200px",
+                                                         margin: "0 auto 8px auto",
+                                                         borderRadius: "10px",
+                                                         objectFit: "contain",
+                                                         boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+                                                          border: "1px solid rgba(251,192,45,0.3)"
+                                                      }}
+                                                  />
                                                 <div style={{
                                                     fontSize: "0.8rem",
                                                     color: "var(--text-muted)",
@@ -2087,41 +2355,110 @@ export default function App() {
                         )}
 
                         {donateChannel === 'truewallet' && (
-                            <div style={{ maxWidth: "400px", margin: "0 auto", padding: "10px 0" }}>
-                                <h3 style={{ marginBottom: "12px", fontSize: "1.1rem" }}><i className="fa-solid fa-mobile-screen-button"></i> โอนผ่านบัญชี TrueMoney Wallet</h3>
-                                <div className="form-group">
-                                    <label>เบอร์โทรศัพท์ทรูวอลเล็ทของท่าน</label>
-                                    <input type="text" id="wallet-phone" placeholder="08x-xxx-xxxx" maxLength="10" required />
+                            <div className="qr-code-display-frame">
+                                <div style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    alignItems: "center",
+                                    padding: "16px 8px",
+                                    gap: "12px"
+                                }}>
+                                    <div style={{
+                                        width: "80px",
+                                        height: "80px",
+                                        borderRadius: "18px",
+                                        background: "#ffffff",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        boxShadow: "0 8px 24px rgba(249,115,22,0.25)",
+                                        border: "1px solid rgba(249,115,22,0.15)",
+                                        overflow: "hidden"
+                                    }}>
+                                        <img 
+                                            src="https://raw.githubusercontent.com/casperstack/thai-banks-logo/master/icons/TrueMoney.png" 
+                                            alt="TrueMoney Wallet" 
+                                            style={{
+                                                width: "80%",
+                                                height: "80%",
+                                                objectFit: "contain"
+                                            }}
+                                        />
+                                    </div>
+                                    <div style={{ textAlign: "center" }}>
+                                        <h3 style={{ margin: "0 0 4px 0", fontSize: "1.1rem" }}>เติมเงินผ่านซอง TrueMoney</h3>
+                                        <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--text-muted)" }}>
+                                            วางลิ้งก์ซองของขวัญ TrueMoney ด้านล่าง
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="form-group">
-                                    <label>จำนวนเงินโอน</label>
-                                    <div style={{ fontSize: "1.5rem", fontWeight: "700", color: "var(--primary)", margin: "6px 0" }}>{(selectedDonateAmount || 0).toFixed(2)} ฿</div>
+
+                                <div className="payment-details-box">
+                                    <div className="form-group" style={{ marginBottom: "12px" }}>
+                                        <label style={{ fontSize: "0.85rem", marginBottom: "6px", display: "block" }}>
+                                            ลิ้งก์ซอง TrueMoney Gift
+                                        </label>
+                                        <input
+                                            type="url"
+                                            id="truemoney-gift-url"
+                                            placeholder="https://gift.truemoney.com/campaign/?v=..."
+                                            style={{
+                                                width: "100%",
+                                                padding: "10px 12px",
+                                                borderRadius: "8px",
+                                                border: "1px solid rgba(249,115,22,0.4)",
+                                                background: "rgba(249,115,22,0.05)",
+                                                color: "var(--text-light)",
+                                                fontSize: "0.85rem",
+                                                boxSizing: "border-box"
+                                            }}
+                                        />
+                                        <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginTop: "4px", display: "block" }}>
+                                            รูปแบบ: https://gift.truemoney.com/campaign/?v=XXXXXXXX
+                                        </span>
+                                    </div>
+                                    <div className="pay-amount">{(selectedDonateAmount || 0).toFixed(2)} ฿</div>
+                                    <div className="countdown-timer">
+                                        <i className="fa-solid fa-clock"></i> ยืนยันภายใน {formatTime(timeLeft)} นาที
+                                    </div>
                                 </div>
-                                <button type="submit" className="btn btn-primary btn-block">
-                                    <i className="fa-solid fa-paper-plane"></i> ยืนยันทำรายการ & เติมเงิน
+
+                                <button type="submit" className="btn btn-success btn-block btn-lg" disabled={isVerifying}>
+                                    {isVerifying ? (
+                                        <><i className="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบซอง...</>
+                                    ) : (
+                                        <><i className="fa-solid fa-gift"></i> ยืนยันซองและเติมเงิน</>
+                                    )}
                                 </button>
                             </div>
                         )}
 
+
+
                         {donateChannel === 'cashcard' && (
                             <div style={{ maxWidth: "400px", margin: "0 auto", padding: "10px 0" }}>
-                                <h3 style={{ marginBottom: "12px", fontSize: "1.1rem" }}><i className="fa-solid fa-credit-card"></i> เติมเงินด้วยบัตรเงินสด ทรูมันนี่</h3>
+                                <h3 style={{ marginBottom: "12px", fontSize: "1.1rem" }}><i className="fa-solid fa-ticket"></i> เปิดใช้งานโค้ดรับพ้อย (เครดิตฟรี)</h3>
                                 <div className="form-group">
-                                    <label>รหัสบัตรเงินสด 14 หลัก</label>
+                                    <label>โค้ดรับพ้อยของท่าน</label>
                                     <input
                                         type="text"
-                                        id="cashcard-pin"
-                                        placeholder="กรอกรหัสพิน 14 หลัก..."
-                                        maxLength="14"
+                                        id="redeem-code-input"
+                                        placeholder="กรอกโค้ด เช่น PB-XXXX-XXXX..."
                                         required
-                                        onChange={(e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); }}
+                                        style={{ textTransform: "uppercase" }}
                                     />
                                 </div>
-                                <div className="info-widget" style={{ padding: "12px", backgroundColor: "var(--warning-light)", borderColor: "rgba(221, 107, 32, 0.2)", marginBottom: "16px" }}>
-                                    <p style={{ fontSize: "0.8rem", color: "var(--warning)", margin: 0 }}><i className="fa-solid fa-circle-exclamation"></i> การเติมเงินด้วยบัตรเงินสดจะมีระบบหักค่าบริการ 15% (จำลอง)</p>
+                                <div className="info-widget" style={{ padding: "12px", backgroundColor: "var(--primary-light)", borderColor: "rgba(6, 182, 212, 0.2)", marginBottom: "16px" }}>
+                                    <p style={{ fontSize: "0.8rem", color: "var(--primary)", margin: 0 }}>
+                                        <i className="fa-solid fa-circle-info"></i> โค้ดรับพ้อยสามารถสร้างขึ้นได้โดยแอดมินหลังบ้าน และใช้งานได้เพียง 1 ครั้งต่อโค้ด
+                                    </p>
                                 </div>
-                                <button type="submit" className="btn btn-primary btn-block">
-                                    <i className="fa-solid fa-wallet"></i> เติมเงินทันที
+                                <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={isVerifying}>
+                                    {isVerifying ? (
+                                        <><i className="fa-solid fa-spinner fa-spin"></i> กำลังดำเนินการ...</>
+                                    ) : (
+                                        <><i className="fa-solid fa-ticket"></i> เปิดใช้งานโค้ด</>
+                                    )}
                                 </button>
                             </div>
                         )}
@@ -2332,7 +2669,7 @@ export default function App() {
         return (
             <div className="admin-layout">
                 <div className="admin-sidebar">
-                    <div className="admin-menu-header">ตัวเลือกจัดการ</div>
+                    <div className="admin-menu-header">เมนูหลัก (MAIN MENU)</div>
                     <div className={`admin-menu-item ${activeAdminTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveAdminTab('dashboard')}>
                         <span><i className="fa-solid fa-chart-line"></i> ภาพรวมระบบ</span>
                     </div>
@@ -2347,6 +2684,10 @@ export default function App() {
                     <div className={`admin-menu-item ${activeAdminTab === 'chats' ? 'active' : ''}`} onClick={() => setActiveAdminTab('chats')}>
                         <span><i className="fa-solid fa-comments"></i> โต๊ะสนทนาแชท</span>
                         {unreadCount > 0 && <span className="admin-badge">{unreadCount}</span>}
+                    </div>
+                    <div className={`admin-menu-item ${activeAdminTab === 'promo_codes' ? 'active' : ''}`} onClick={() => setActiveAdminTab('promo_codes')}>
+                        <span><i className="fa-solid fa-ticket"></i> สร้างโค้ดรับพ้อย</span>
+                        <span className="admin-badge" style={{ backgroundColor: "#10b881", color: "#090d16" }}>{promoCodes.length}</span>
                     </div>
                     <div className="dropdown-divider"></div>
                     <a href="#/" className="admin-menu-item" style={{ color: "var(--text-muted)" }}>
@@ -2644,6 +2985,135 @@ export default function App() {
                             </div>
                         </>
                     )}
+
+                    {activeAdminTab === 'promo_codes' && (
+                        <div>
+                            <h2 style={{ marginBottom: "20px" }}><i className="fa-solid fa-ticket"></i> จัดการโค้ดรับพ้อย (เครดิตฟรี)</h2>
+                            
+                            <form onSubmit={handleAdminCreatePromoCode} style={{
+                                backgroundColor: "var(--surface)",
+                                padding: "20px",
+                                borderRadius: "var(--radius-md)",
+                                border: "1px solid var(--border)",
+                                marginBottom: "24px",
+                                maxWidth: "600px"
+                            }}>
+                                <h3 style={{ fontSize: "1.1rem", marginBottom: "16px" }}><i className="fa-solid fa-plus-circle"></i> สร้างโค้ดรับพ้อยใหม่</h3>
+                                
+                                <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
+                                    <div style={{ flex: 1, minWidth: "200px" }} className="form-group">
+                                        <label>โค้ดรับพ้อย (ภาษาอังกฤษ/ตัวเลข)</label>
+                                        <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+                                            <input 
+                                                type="text" 
+                                                id="admin-promo-code" 
+                                                required 
+                                                placeholder="เช่น VOUCHER100" 
+                                                style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none" }}
+                                            />
+                                            <button 
+                                                type="button" 
+                                                className="btn btn-outline btn-sm"
+                                                onClick={() => {
+                                                    const rand = "PB-" + Math.floor(1000 + Math.random() * 9000) + "-" + Math.floor(1000 + Math.random() * 9000);
+                                                    if (document.getElementById("admin-promo-code")) {
+                                                        document.getElementById("admin-promo-code").value = rand;
+                                                    }
+                                                }}
+                                                style={{ whiteSpace: "nowrap" }}
+                                            >
+                                                สุ่มโค้ด
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div style={{ width: "150px" }} className="form-group">
+                                        <label>จำนวนพ้อย (บาท)</label>
+                                        <input 
+                                            type="number" 
+                                            id="admin-promo-points" 
+                                            required 
+                                            min="1" 
+                                            placeholder="100" 
+                                            style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none", marginTop: "6px" }}
+                                        />
+                                    </div>
+                                </div>
+                                <button type="submit" className="btn btn-primary"><i className="fa-solid fa-plus"></i> ยืนยันสร้างโค้ด</button>
+                            </form>
+
+                            <div style={{
+                                backgroundColor: "var(--surface)",
+                                borderRadius: "var(--radius-md)",
+                                border: "1px solid var(--border)",
+                                overflow: "hidden"
+                            }}>
+                                <table className="admin-table" style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                                    <thead>
+                                        <tr style={{ borderBottom: "2px solid var(--border)", backgroundColor: "rgba(0,0,0,0.15)" }}>
+                                            <th style={{ padding: "12px 16px" }}>โค้ดรับพ้อย</th>
+                                            <th style={{ padding: "12px 16px" }}>จำนวนพ้อย</th>
+                                            <th style={{ padding: "12px 16px" }}>สถานะ</th>
+                                            <th style={{ padding: "12px 16px" }}>ผู้รับพ้อย</th>
+                                            <th style={{ padding: "12px 16px" }}>วันเวลาที่สร้าง</th>
+                                            <th style={{ padding: "12px 16px" }}>จัดการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {promoCodes.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="6" style={{ padding: "30px", textCenter: "center", color: "var(--text-muted)", textAlign: "center" }}>ยังไม่มีโค้ดในระบบ</td>
+                                            </tr>
+                                        ) : (
+                                            promoCodes.map(promo => (
+                                                <tr key={promo.id} style={{ borderBottom: "1px solid var(--border)" }}>
+                                                    <td style={{ padding: "12px 16px", fontWeight: "600", color: "var(--primary)" }}>{promo.code}</td>
+                                                    <td style={{ padding: "12px 16px", fontWeight: "600" }}>{parseFloat(promo.points).toFixed(2)} ฿</td>
+                                                    <td style={{ padding: "12px 16px" }}>
+                                                        {promo.is_redeemed ? (
+                                                            <span className="badge" style={{ backgroundColor: "rgba(239, 68, 68, 0.15)", color: "#ef4444", padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" }}>ใช้งานแล้ว</span>
+                                                        ) : (
+                                                            <span className="badge" style={{ backgroundColor: "rgba(16, 185, 129, 0.15)", color: "#10b881", padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" }}>ยังไม่ได้ใช้</span>
+                                                        )}
+                                                    </td>
+                                                    <td style={{ padding: "12px 16px", color: promo.redeemed_by ? "var(--text-light)" : "var(--text-muted)" }}>
+                                                        {promo.redeemed_by || "-"}
+                                                    </td>
+                                                    <td style={{ padding: "12px 16px", color: "var(--text-muted)", fontSize: "0.8rem" }}>
+                                                        {new Date(promo.created_at).toLocaleString('th-TH')}
+                                                    </td>
+                                                    <td style={{ padding: "12px 16px" }}>
+                                                        <button 
+                                                            type="button"
+                                                            className="btn btn-outline btn-xs" 
+                                                            onClick={async () => {
+                                                                if (window.confirm("ยืนยันการลับโค้ดนี้ออกจากระบบ?")) {
+                                                                    try {
+                                                                        const res = await fetch(`${SUPABASE_URL}/rest/v1/promo_codes?id=eq.${promo.id}`, {
+                                                                            method: "DELETE",
+                                                                            headers: supabaseHeaders
+                                                                        });
+                                                                        if (res.ok) {
+                                                                            setPromoCodes(prev => prev.filter(x => x.id !== promo.id));
+                                                                            showToast("ลบโค้ดสำเร็จเรียบร้อยค่ะ");
+                                                                        }
+                                                                    } catch (err) {
+                                                                        showToast("ลบโค้ดล้มเหลว", "error");
+                                                                    }
+                                                                }
+                                                            }}
+                                                            style={{ borderColor: "rgba(239, 68, 68, 0.3)", color: "#ef4444" }}
+                                                        >
+                                                            <i className="fa-solid fa-trash"></i> ลบ
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -2892,10 +3362,8 @@ export default function App() {
                         </div>
                         <p>ร้านค้าจำหน่ายสินค้าดิจิทัล บัตรเติมเกม และบริการต่างๆ ปลอดภัย รวดเร็ว ตลอด 24 ชั่วโมง</p>
                         <div className="social-links">
-                            <a href="#" aria-label="Facebook"><i className="fa-brands fa-facebook-f"></i></a>
-                            <a href="#" aria-label="Discord"><i className="fa-brands fa-discord"></i></a>
-                            <a href="#" aria-label="Line"><i className="fa-brands fa-line"></i></a>
-                            <a href="#" aria-label="Youtube"><i className="fa-brands fa-youtube"></i></a>
+                            <a href="" aria-label="Facebook"><i className="fa-brands fa-facebook-f"></i></a>
+                            <a href="https://discord.gg/FYSJRGEG58" aria-label="Discord"><i className="fa-brands fa-discord"></i></a>
                         </div>
                     </div>
                     <div className="footer-nav">
@@ -3309,7 +3777,7 @@ export default function App() {
                                                     <option value="steam">ไอคอนสตีม (Steam)</option>
                                                     <option value="discord">ไอคอนดิสคอร์ด (Discord)</option>
                                                     <option value="netflix">ไอคอนเน็ตฟลิกซ์ (Netflix)</option>
-                                                    <option value="others">ไอคอนทั่วไป (Others)</option>
+                                                    <option value="others">ไอคอนอื่นๆ (Others)</option>
                                                 </select>
                                             </div>
                                             {(adminImageUrl || adminImagePreview) && (

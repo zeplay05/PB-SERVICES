@@ -2509,6 +2509,16 @@ select option {
     cursor: pointer;
     transition: var(--transition-fast);
 }
+.admin-menu-item span {
+    display: flex;
+    align-items: center;
+}
+.admin-menu-item i {
+    width: 20px;
+    text-align: center;
+    margin-right: 10px;
+    display: inline-block;
+}
 .admin-menu-item:hover, .admin-menu-item.active {
     background-color: var(--bg-app);
     color: var(--primary);
@@ -3104,24 +3114,24 @@ select option {
     /* Admin Sidebar Tabbed Navigation on Mobile */
     .admin-sidebar {
         display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: 8px;
-        padding: 12px;
+        padding: 16px;
     }
     .admin-menu-header {
         width: 100%;
-        margin-bottom: 0;
+        margin-bottom: 4px;
         padding: 4px 8px;
         font-size: 0.75rem;
     }
     .admin-menu-item {
-        flex: 1 1 auto;
-        justify-content: center;
-        text-align: center;
-        padding: 8px 12px;
-        font-size: 0.85rem;
-        gap: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+        padding: 10px 14px;
+        font-size: 0.9rem;
+        gap: 10px;
     }
     .admin-content {
         padding: 20px 16px;

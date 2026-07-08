@@ -5,10 +5,10 @@ import path from 'path'
 
 try {
   const src = "c:\\Users\\Mewie\\Downloads\\0bf01764-84f2-4916-a20b-1e8e99ddea63.png";
-  const dest = path.resolve("public/logo.png");
+  const dest = path.resolve("public/Logo.png");
   if (fs.existsSync(src)) {
     fs.copyFileSync(src, dest);
-    console.log("Successfully copied logo image to public/logo.png");
+    console.log("Successfully copied logo image to public/Logo.png");
   } else {
     console.error("Source logo file does not exist at:", src);
   }

@@ -108,7 +108,7 @@ app.post("/api/verify-slip", upload.single("slip"), async (req, res) => {
       checkDuplicate: true,
       checkReceiver: [
         {
-          accountType: "01014",
+          accountType: "01014", // แก้ไขเป็นข้อมูลบัญชีปลายทางของระบบคุณบอล
           accountNameEN: "Kotchakorn Prasit",
           accountNameTH: "กชกร ประสิทธิ์",
           accountNumber: "4112158028",
@@ -116,7 +116,7 @@ app.post("/api/verify-slip", upload.single("slip"), async (req, res) => {
       ],
       checkAmount: {
         type: "eq",
-        amount: amount,
+        amount: amount, // ดึงจากยอดโอนที่ลูกค้ากรอกเข้ามาเช็ค
       },
     };
 
@@ -149,7 +149,8 @@ app.post("/api/verify-slip", upload.single("slip"), async (req, res) => {
       );
 
       responseText = await slip2goResponse.text();
-      console.log(`\x1b[33m[Slip2Go RAW Response] HTTP ${slip2goResponse.status}:\x1b[0m`, responseText);
+      console.log("Slip2Go raw responseText:", responseText);
+
       if (slip2goResponse.status === 200) {
         slipResult = JSON.parse(responseText);
         succeeded = true;
@@ -171,7 +172,7 @@ app.post("/api/verify-slip", upload.single("slip"), async (req, res) => {
               ref_number:
                 "SIM-" + Math.floor(1000000000 + Math.random() * 9000000000),
               sender: `นายทดสอบ จำลอง (${username})`,
-              receiver: "PB SERVICES",
+              receiver: "DUCKDUCK STORE",
             },
           };
           succeeded = true;
