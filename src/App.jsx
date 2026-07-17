@@ -248,6 +248,29 @@ const DEFAULT_PRODUCTS = [
     }
 ];
 
+const DEFAULT_PROMOTIONS = [
+    {
+        id: "promo-discord",
+        category: "DISCORD Promotion",
+        name: "Nitro Boost (1 ปี)",
+        price: 1290,
+        originalPrice: 1490,
+        icon: "discord",
+        iconColor: "#5865f2",
+        isActive: true
+    },
+    {
+        id: "promo-fivem",
+        category: "FIVEM Promotion",
+        name: "FiveM",
+        price: 290,
+        originalPrice: 340,
+        icon: "fivem",
+        iconColor: "#f40552",
+        isActive: true
+    }
+];
+
 const DEFAULT_USERS = [
     {
         userId: "USR-82739",
@@ -491,6 +514,26 @@ function ProductSVG({ type }) {
     }
 }
 
+const renderPromoIcon = (icon, iconColor) => {
+    switch (icon) {
+        case 'discord':
+            return <i className="fa-brands fa-discord f-card-icon" style={{ color: iconColor }}></i>;
+        case 'fivem':
+            return (
+                <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ width: "1.4rem", height: "1.4rem", fill: iconColor }} className="f-card-icon">
+                    <path d="M22.4 24h-5.225c-.117 0-.455-1.127-1.026-3.375-1.982-6.909-3.124-10.946-3.417-12.12l3.37-3.325h.099c.454 1.42 2.554 7.676 6.299 18.768ZM12.342 7.084h-.048a3.382 3.385 0 0 1-.098-.492v-.098a102.619 102.715 0 0 1 3.272-3.275c.13.196.196.356.196.491v.05a140.694 140.826 0 0 1-3.322 3.324ZM5.994 10.9h-.05c.67-2.12 1.076-3.209 1.223-3.275L14.492.343c.08 0 .258.524.533 1.562zm1.37-4.014h-.05C8.813 2.342 9.612.048 9.71 0h4.495v.05a664.971 664.971 0 0 1-6.841 6.839Zm-2.69 7.874h-.05c.166-.798.554-1.418 1.174-1.855a312.918 313.213 0 0 1 5.71-5.717h.05c-.117.672-.375 1.175-.781 1.52zM1.598 24l-.098-.05c1.399-4.172 2.148-6.322 2.248-6.45l6.74-6.694v.05C10.232 11.88 8.974 16.263 6.73 24Z"/>
+                </svg>
+            );
+        case 'steam':
+            return <i className="fa-brands fa-steam f-card-icon" style={{ color: iconColor }}></i>;
+        case 'netflix':
+            return <i className="fa-solid fa-play f-card-icon" style={{ color: iconColor }}></i>;
+        case 'others':
+        default:
+            return <i className="fa-solid fa-star f-card-icon" style={{ color: iconColor }}></i>;
+    }
+};
+
 // --------------------------------------------------------------------------
 // App Core Component
 // --------------------------------------------------------------------------
@@ -599,6 +642,14 @@ export default function App() {
         }
         return stored;
     });
+    const [promotions, setPromotions] = useState(() => {
+        const stored = loadStoredJson("x24_promotions", null);
+        if (!stored) {
+            localStorage.setItem("x24_promotions", JSON.stringify(DEFAULT_PROMOTIONS));
+            return DEFAULT_PROMOTIONS;
+        }
+        return stored;
+    });
     const [orders, setOrders] = useState(() => {
         const stored = loadStoredJson("x24_orders", DEFAULT_ORDERS);
         return stored.map(order => {
@@ -660,6 +711,65 @@ export default function App() {
     const [activeAdminTab, setActiveAdminTab] = useState('dashboard');
     const [activeChatThread, setActiveChatThread] = useState('');
     const [promoCodes, setPromoCodes] = useState([]);
+    const [editingPromo, setEditingPromo] = useState(null);
+    const [showPromoFormModal, setShowPromoFormModal] = useState(false);
+    const [showPromoCodeFormModal, setShowPromoCodeFormModal] = useState(false);
+
+    // Admin Notification States (unread tracking)
+    const [readProductIds, setReadProductIds] = useState(() => {
+        const stored = localStorage.getItem("x24_read_products");
+        if (stored === null) {
+            let initialProducts = [];
+            try {
+                const storedProds = localStorage.getItem("x24_products");
+                initialProducts = storedProds ? JSON.parse(storedProds) : DEFAULT_PRODUCTS;
+            } catch (e) {
+                initialProducts = DEFAULT_PRODUCTS;
+            }
+            const ids = initialProducts.map(p => p.id);
+            localStorage.setItem("x24_read_products", JSON.stringify(ids));
+            return ids;
+        }
+        try {
+            return JSON.parse(stored);
+        } catch (e) {
+            return [];
+        }
+    });
+
+    const [readOrderIds, setReadOrderIds] = useState(() => {
+        const stored = localStorage.getItem("x24_read_orders");
+        if (stored === null) {
+            let initialOrders = [];
+            try {
+                const storedOrds = localStorage.getItem("x24_orders");
+                initialOrders = storedOrds ? JSON.parse(storedOrds) : DEFAULT_ORDERS;
+            } catch (e) {
+                initialOrders = DEFAULT_ORDERS;
+            }
+            const ids = initialOrders.map(o => o.orderId);
+            localStorage.setItem("x24_read_orders", JSON.stringify(ids));
+            return ids;
+        }
+        try {
+            return JSON.parse(stored);
+        } catch (e) {
+            return [];
+        }
+    });
+
+    const [readPromoCodeIds, setReadPromoCodeIds] = useState(() => {
+        const stored = localStorage.getItem("x24_read_promo_codes");
+        if (stored === null) {
+            localStorage.setItem("x24_read_promo_codes", JSON.stringify([]));
+            return [];
+        }
+        try {
+            return JSON.parse(stored);
+        } catch (e) {
+            return [];
+        }
+    });
 
     // Donation States
     const [donateChannel, setDonateChannel] = useState('promptpay');
@@ -704,6 +814,22 @@ export default function App() {
     const adminChatFeedRef = useRef(null);
     const cartOwnerRef = useRef(null);
 
+    const activeAdminTabRef = useRef(activeAdminTab);
+    const activeChatThreadRef = useRef(activeChatThread);
+    const chatsRef = useRef(chats);
+
+    useEffect(() => {
+        activeAdminTabRef.current = activeAdminTab;
+    }, [activeAdminTab]);
+
+    useEffect(() => {
+        activeChatThreadRef.current = activeChatThread;
+    }, [activeChatThread]);
+
+    useEffect(() => {
+        chatsRef.current = chats;
+    }, [chats]);
+
     // --------------------------------------------------------------------------
     // Side Effects & Synchronizations
     // --------------------------------------------------------------------------
@@ -729,6 +855,10 @@ export default function App() {
         localStorage.setItem("x24_delivery_notifications", JSON.stringify(deliveryNotifications));
     }, [deliveryNotifications]);
 
+    useEffect(() => {
+        localStorage.setItem("x24_promotions", JSON.stringify(promotions));
+    }, [promotions]);
+
     // Update admin custom image states on product edit modal load
     useEffect(() => {
         if (activeDetailProduct && activeDetailProduct.isAdminEdit) {
@@ -737,6 +867,26 @@ export default function App() {
             setAdminProdSvg(activeDetailProduct.svgType || "discord");
         }
     }, [activeDetailProduct]);
+
+    useEffect(() => {
+        if (editingPromo) {
+            if (document.getElementById("admin-promo-category")) document.getElementById("admin-promo-category").value = editingPromo.category || "";
+            if (document.getElementById("admin-promo-name")) document.getElementById("admin-promo-name").value = editingPromo.name || "";
+            if (document.getElementById("admin-promo-price")) document.getElementById("admin-promo-price").value = editingPromo.price || 0;
+            if (document.getElementById("admin-promo-original-price")) document.getElementById("admin-promo-original-price").value = editingPromo.originalPrice || "";
+            if (document.getElementById("admin-promo-icon")) document.getElementById("admin-promo-icon").value = editingPromo.icon || "discord";
+            if (document.getElementById("admin-promo-icon-color")) document.getElementById("admin-promo-icon-color").value = editingPromo.iconColor || "#5865f2";
+            if (document.getElementById("admin-promo-active")) document.getElementById("admin-promo-active").checked = !!editingPromo.isActive;
+        } else {
+            if (document.getElementById("admin-promo-category")) document.getElementById("admin-promo-category").value = "";
+            if (document.getElementById("admin-promo-name")) document.getElementById("admin-promo-name").value = "";
+            if (document.getElementById("admin-promo-price")) document.getElementById("admin-promo-price").value = "";
+            if (document.getElementById("admin-promo-original-price")) document.getElementById("admin-promo-original-price").value = "";
+            if (document.getElementById("admin-promo-icon")) document.getElementById("admin-promo-icon").value = "discord";
+            if (document.getElementById("admin-promo-icon-color")) document.getElementById("admin-promo-icon-color").value = "#5865f2";
+            if (document.getElementById("admin-promo-active")) document.getElementById("admin-promo-active").checked = true;
+        }
+    }, [editingPromo]);
 
     useEffect(() => {
         localStorage.setItem("x24_current_user", JSON.stringify(currentUser));
@@ -835,6 +985,12 @@ export default function App() {
             if (e.key === "x24_products") {
                 setProducts(loadStoredJson("x24_products", DEFAULT_PRODUCTS));
             }
+            if (e.key === "x24_orders") {
+                setOrders(loadStoredJson("x24_orders", DEFAULT_ORDERS));
+            }
+            if (e.key === "x24_promotions") {
+                setPromotions(loadStoredJson("x24_promotions", DEFAULT_PROMOTIONS));
+            }
         };
 
         window.addEventListener('storage', handleStorageEvent);
@@ -859,6 +1015,24 @@ export default function App() {
         const syncChats = async () => {
             const remoteChats = await fetchChatsFromSupabase();
             if (remoteChats) {
+                // Determine if there are new unread messages for the admin
+                Object.keys(remoteChats).forEach(user => {
+                    const remoteThread = remoteChats[user] || [];
+                    if (remoteThread.length === 0) return;
+                    const lastMsg = remoteThread[remoteThread.length - 1];
+                    
+                    // If the last message is from the user
+                    if (lastMsg.sender === 'user') {
+                        const localThread = chatsRef.current[user] || [];
+                        const hasNewMsg = localThread.length === 0 || 
+                            lastMsg.timestamp > (localThread[localThread.length - 1]?.timestamp || 0);
+                        
+                        const isActivelyViewing = activeAdminTabRef.current === 'chats' && activeChatThreadRef.current === user;
+                        if (hasNewMsg && !isActivelyViewing) {
+                            localStorage.setItem("x24_unread_admin_" + user, "1");
+                        }
+                    }
+                });
                 setChats(remoteChats);
             }
         };
@@ -887,6 +1061,42 @@ export default function App() {
             loadPromoCodes();
         }
     }, [activeAdminTab]);
+
+    // Mark products as read when clicking the products tab
+    useEffect(() => {
+        if (activeAdminTab === 'products' && products.length > 0) {
+            const productIds = products.map(p => p.id);
+            const updated = Array.from(new Set([...readProductIds, ...productIds]));
+            if (updated.length !== readProductIds.length) {
+                setReadProductIds(updated);
+                localStorage.setItem("x24_read_products", JSON.stringify(updated));
+            }
+        }
+    }, [activeAdminTab, products, readProductIds]);
+
+    // Mark orders as read when clicking the orders tab
+    useEffect(() => {
+        if (activeAdminTab === 'orders' && orders.length > 0) {
+            const orderIds = orders.map(o => o.orderId);
+            const updated = Array.from(new Set([...readOrderIds, ...orderIds]));
+            if (updated.length !== readOrderIds.length) {
+                setReadOrderIds(updated);
+                localStorage.setItem("x24_read_orders", JSON.stringify(updated));
+            }
+        }
+    }, [activeAdminTab, orders, readOrderIds]);
+
+    // Mark promo codes as read when clicking the promo codes tab
+    useEffect(() => {
+        if (activeAdminTab === 'promo_codes' && promoCodes.length > 0) {
+            const promoIds = promoCodes.map(p => p.id);
+            const updated = Array.from(new Set([...readPromoCodeIds, ...promoIds]));
+            if (updated.length !== readPromoCodeIds.length) {
+                setReadPromoCodeIds(updated);
+                localStorage.setItem("x24_read_promo_codes", JSON.stringify(updated));
+            }
+        }
+    }, [activeAdminTab, promoCodes, readPromoCodeIds]);
 
     // --------------------------------------------------------------------------
     // Global Helper Actions
@@ -1346,6 +1556,7 @@ export default function App() {
         };
 
         await insertSupabaseChat(user, text, attachment, false);
+        localStorage.setItem("x24_unread_admin_" + user, "1");
 
         if (input) input.value = '';
         if (fileInput) fileInput.value = '';
@@ -1380,6 +1591,7 @@ export default function App() {
         const welcomeText = "ยินดีต้อนรับเข้าสู่ PB SERVICES Live Support! เจ้าหน้าที่ได้รับตั๋วสนทนาของท่านแล้ว กรุณาพิมพ์ทิ้งคำถามหรือข้อสงสัยไว้ได้เลยค่ะ";
         
         await insertSupabaseChat(user, welcomeText, null, false);
+        localStorage.setItem("x24_unread_admin_" + user, "1");
         showToast("เปิดตั๋วติดต่อแอดมินสำเร็จแล้วค่ะ");
     };
 
@@ -1393,6 +1605,7 @@ export default function App() {
                     method: "DELETE",
                     headers: supabaseHeaders
                 });
+                localStorage.removeItem("x24_unread_admin_" + user);
                 setChats(prev => {
                     const updated = { ...prev };
                     delete updated[user];
@@ -1415,6 +1628,7 @@ export default function App() {
                     method: "DELETE",
                     headers: supabaseHeaders
                 });
+                localStorage.removeItem("x24_unread_admin_" + username);
                 setChats(prev => {
                     const updated = { ...prev };
                     delete updated[username];
@@ -1531,6 +1745,73 @@ export default function App() {
         } catch (err) {
             console.error("Error creating promo code:", err);
             showToast("เกิดข้อผิดพลาดในการเชื่อมต่อฐานข้อมูล", "error");
+        }
+    };
+
+    // Admin promotions CRUD handlers
+    const handleAdminCreateOrUpdatePromotion = (e) => {
+        e.preventDefault();
+        const category = document.getElementById("admin-promo-category")?.value?.trim();
+        const name = document.getElementById("admin-promo-name")?.value?.trim();
+        const price = parseFloat(document.getElementById("admin-promo-price")?.value) || 0;
+        const origVal = document.getElementById("admin-promo-original-price")?.value?.trim();
+        const originalPrice = origVal ? parseFloat(origVal) : null;
+        const icon = document.getElementById("admin-promo-icon")?.value;
+        const iconColor = document.getElementById("admin-promo-icon-color")?.value || "#5865f2";
+        const isActive = document.getElementById("admin-promo-active")?.checked;
+
+        if (!category || !name || price < 0) {
+            showToast("กรุณากรอกข้อมูลให้ครบถ้วนและถูกต้อง", "warning");
+            return;
+        }
+
+        if (editingPromo) {
+            // Update
+            setPromotions(prev => prev.map(p => p.id === editingPromo.id ? {
+                ...p,
+                category,
+                name,
+                price,
+                originalPrice,
+                icon,
+                iconColor,
+                isActive
+            } : p));
+            showToast("แก้ไขโปรโมชั่นสำเร็จ!");
+            setEditingPromo(null);
+        } else {
+            // Create
+            const newPromo = {
+                id: "promo-" + Math.random().toString(36).substring(2, 9),
+                category,
+                name,
+                price,
+                originalPrice,
+                icon,
+                iconColor,
+                isActive
+            };
+            setPromotions(prev => [...prev, newPromo]);
+            showToast("เพิ่มโปรโมชั่นใหม่สำเร็จ!");
+        }
+
+        // Reset fields
+        if (document.getElementById("admin-promo-category")) document.getElementById("admin-promo-category").value = '';
+        if (document.getElementById("admin-promo-name")) document.getElementById("admin-promo-name").value = '';
+        if (document.getElementById("admin-promo-price")) document.getElementById("admin-promo-price").value = '';
+        if (document.getElementById("admin-promo-original-price")) document.getElementById("admin-promo-original-price").value = '';
+        if (document.getElementById("admin-promo-icon")) document.getElementById("admin-promo-icon").value = 'discord';
+        if (document.getElementById("admin-promo-icon-color")) document.getElementById("admin-promo-icon-color").value = '#5865f2';
+        if (document.getElementById("admin-promo-active")) document.getElementById("admin-promo-active").checked = true;
+    };
+
+    const handleAdminDeletePromotion = (id) => {
+        if (window.confirm("ยืนยันการลบโปรโมชั่นนี้ออกจากระบบ?")) {
+            setPromotions(prev => prev.filter(p => p.id !== id));
+            showToast("ลบโปรโมชั่นสำเร็จ!");
+            if (editingPromo && editingPromo.id === id) {
+                setEditingPromo(null);
+            }
         }
     };
 
@@ -1651,6 +1932,10 @@ export default function App() {
             }
         }
 
+        const activePromotions = promotions.filter(p => p.isActive);
+        const promo1 = activePromotions[0];
+        const promo2 = activePromotions[1];
+
         return (
             <>
                 <section className="hero-section">
@@ -1658,29 +1943,47 @@ export default function App() {
                         <div className="hero-tagline"><i className="fa-solid fa-bolt"></i> บริการรวดเร็วทันใจ 24 ชั่วโมง</div>
                         <h1>ยินดีต้อนรับสู่ <span>PB SERVICES</span></h1>
                         <p>แหล่งรวมสินค้า จบครบที่เดียว แอดมินพร้อมตอบ 24 ชั่วโมง ดูแลตลอดชีพ ให้ PB SERVICES ได้ดูแลลูกค้าทุกคน</p>
-                        <div class="hero-cta">
+                        <div className="hero-cta">
                             <a href="#/products" className="btn btn-primary btn-lg"><i className="fa-solid fa-basket-shopping"></i> เริ่มช้อปเลย</a>
                             <a href="#/donate" className="btn btn-outline btn-lg"><i className="fa-solid fa-wallet"></i> เติมเงินเข้าระบบ</a>
                         </div>
                     </div>
                     <div className="hero-graphics">
                         <div className="floating-cards-container">
-                            <div className="f-card c1">
-                                <div className="f-card-header">
-                                    <span>DISCORD Promotion</span>
-                                    <i className="fa-brands fa-discord f-card-icon" style={{ color: "#5865f2" }}></i>
+                            {promo1 && (
+                                <div className="f-card c1">
+                                    <div className="f-card-header">
+                                        <span>{promo1.category}</span>
+                                        {renderPromoIcon(promo1.icon, promo1.iconColor)}
+                                    </div>
+                                    <strong>{promo1.name}</strong>
+                                    <div className="f-card-price" style={{ color: promo1.iconColor }}>
+                                        {promo1.price.toLocaleString()} ฿{" "}
+                                        {promo1.originalPrice && (
+                                            <span style={{ fontSize: "0.75rem", textDecoration: "line-through", color: "var(--text-light)" }}>
+                                                {promo1.originalPrice.toLocaleString()} ฿
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                                <strong>Nitro Boost (1 ปี)</strong>
-                                <div className="f-card-price" style={{ color: "#5865f2" }}>1,290 ฿ <span style={{fontSize: "0.75rem", textDecoration: "line-through", color: "var(--text-light)"}}>1,490 ฿</span></div>
-                            </div>
-                            <div className="f-card c2">
-                                <div className="f-card-header">
-                                    <span>FIVEM Promotion</span>
-                                    <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ width: "1.4rem", height: "1.4rem", fill: "#f40552" }}><path d="M22.4 24h-5.225c-.117 0-.455-1.127-1.026-3.375-1.982-6.909-3.124-10.946-3.417-12.12l3.37-3.325h.099c.454 1.42 2.554 7.676 6.299 18.768ZM12.342 7.084h-.048a3.382 3.385 0 0 1-.098-.492v-.098a102.619 102.715 0 0 1 3.272-3.275c.13.196.196.356.196.491v.05a140.694 140.826 0 0 1-3.322 3.324ZM5.994 10.9h-.05c.67-2.12 1.076-3.209 1.223-3.275L14.492.343c.08 0 .258.524.533 1.562zm1.37-4.014h-.05C8.813 2.342 9.612.048 9.71 0h4.495v.05a664.971 664.971 0 0 1-6.841 6.839Zm-2.69 7.874h-.05c.166-.798.554-1.418 1.174-1.855a312.918 313.213 0 0 1 5.71-5.717h.05c-.117.672-.375 1.175-.781 1.52zM1.598 24l-.098-.05c1.399-4.172 2.148-6.322 2.248-6.45l6.74-6.694v.05C10.232 11.88 8.974 16.263 6.73 24Z"/></svg>
+                            )}
+                            {promo2 && (
+                                <div className="f-card c2">
+                                    <div className="f-card-header">
+                                        <span>{promo2.category}</span>
+                                        {renderPromoIcon(promo2.icon, promo2.iconColor)}
+                                    </div>
+                                    <strong>{promo2.name}</strong>
+                                    <div className="f-card-price" style={{ color: promo2.iconColor }}>
+                                        {promo2.price.toLocaleString()} ฿{" "}
+                                        {promo2.originalPrice && (
+                                            <span style={{ fontSize: "0.75rem", textDecoration: "line-through", color: "var(--text-light)" }}>
+                                                {promo2.originalPrice.toLocaleString()} ฿
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
-                                <strong>FiveM</strong>
-                                <div className="f-card-price" style={{ color: "#f40552" }}>290 ฿ <span style={{fontSize: "0.75rem", textDecoration: "line-through", color: "var(--text-light)"}}>340 ฿</span></div>
-                            </div>
+                            )}
                             <div className="f-card c3">
                                 <i className="fa-solid fa-shield-halved" style={{ display: "block", fontSize: "1.4rem", marginBottom: "6px" }}></i>
                                 <span>รับประกันปลอดภัย 100%</span>
@@ -2119,7 +2422,7 @@ export default function App() {
                         </button>
                         <button className={`payment-tab-btn ${donateChannel === 'cashcard' ? 'active' : ''}`} onClick={() => setDonateChannel('cashcard')}>
                             <i className="fa-solid fa-ticket"></i>
-                            <span>กรอกโค้ดรับพ้อย</span>
+                            <span>กรอกโค้ดรับพ้อย (เติมไม่เข้า)</span>
                         </button>
                     </div>
 
@@ -2437,20 +2740,20 @@ export default function App() {
 
                         {donateChannel === 'cashcard' && (
                             <div style={{ maxWidth: "400px", margin: "0 auto", padding: "10px 0" }}>
-                                <h3 style={{ marginBottom: "12px", fontSize: "1.1rem" }}><i className="fa-solid fa-ticket"></i> เปิดใช้งานโค้ดรับพ้อย (เครดิตฟรี)</h3>
+                                <h3 style={{ marginBottom: "12px", fontSize: "1.1rem" }}><i className="fa-solid fa-ticket"></i> เปิดใช้งานโค้ดรับพ้อย (กรณีเติมเงินไม่เข้า)</h3>
                                 <div className="form-group">
-                                    <label>โค้ดรับพ้อยของท่าน</label>
+                                    <label>รหัสโค้ดเติมเงินที่ได้จากแอดมิน</label>
                                     <input
                                         type="text"
                                         id="redeem-code-input"
-                                        placeholder="กรอกโค้ด เช่น PB-XXXX-XXXX..."
+                                        placeholder="กรอกโค้ดเติมเงินที่แอดมินส่งให้..."
                                         required
                                         style={{ textTransform: "uppercase" }}
                                     />
                                 </div>
                                 <div className="info-widget" style={{ padding: "12px", backgroundColor: "var(--primary-light)", borderColor: "rgba(6, 182, 212, 0.2)", marginBottom: "16px" }}>
-                                    <p style={{ fontSize: "0.8rem", color: "var(--primary)", margin: 0 }}>
-                                        <i className="fa-solid fa-circle-info"></i> โค้ดรับพ้อยสามารถสร้างขึ้นได้โดยแอดมินหลังบ้าน และใช้งานได้เพียง 1 ครั้งต่อโค้ด
+                                    <p style={{ fontSize: "0.8rem", color: "var(--primary)", margin: 0, lineHeight: "1.4" }}>
+                                        <i className="fa-solid fa-circle-info"></i> <strong>กรณีเติมเงินแล้วพ้อยไม่เข้า:</strong> ลูกค้าสามารถติดต่อแอดมินเพื่อตรวจสอบและรับรหัสโค้ดเติมเงินเพื่อนำมากรอกรับเครดิตที่นี่ (ใช้งานได้เพียง 1 ครั้งต่อโค้ด)
                                     </p>
                                 </div>
                                 <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={isVerifying}>
@@ -2469,8 +2772,8 @@ export default function App() {
                     <div className="info-widget">
                         <h3><i className="fa-solid fa-info-circle"></i> คำอธิบายการเติมเงิน</h3>
                         <ul>
-                            <li><i className="fa-solid fa-circle-check"></i> ระบบเติมเงินนี้เป็น <strong>ระบบจำลองเพื่อการทดสอบ</strong></li>
-                            <li><i className="fa-solid fa-circle-check"></i> หลังกดปุ่มเติมเงิน ยอดจะแอดเข้าบัญชีใน LocalStorage ทันที</li>
+                            <li><i className="fa-solid fa-circle-check"></i> ระบบเติมเงินนี้เป็น <strong>ระบบการเติมเงินอัตโนมัติ</strong></li>
+                            <li><i className="fa-solid fa-circle-check"></i> หลังกดปุ่มเติมเงิน ยอดจะแอดเข้าบัญชีทันที</li>
                             <li><i className="fa-solid fa-circle-check"></i> อัตราแลกเปลี่ยน 1 บาท = 1 เครดิตในร้านค้า</li>
                             <li><i className="fa-solid fa-circle-check"></i> ไม่มีการเก็บค่าธรรมเนียมจริงใดๆ ทั้งสิ้น</li>
                         </ul>
@@ -2649,6 +2952,10 @@ export default function App() {
         const unreadThreads = threads.filter(t => localStorage.getItem("x24_unread_admin_" + t) === "1");
         const unreadCount = unreadThreads.length;
 
+        const unreadProductsCount = products.filter(p => !readProductIds.includes(p.id)).length;
+        const unreadOrdersCount = orders.filter(o => !readOrderIds.includes(o.orderId)).length;
+        const unreadPromoCodesCount = promoCodes.filter(p => !readPromoCodeIds.includes(p.id)).length;
+
         if (!currentUser || currentUser.role !== 'admin') {
             return (
                 <div className="admin-auth-panel">
@@ -2675,11 +2982,11 @@ export default function App() {
                     </div>
                     <div className={`admin-menu-item ${activeAdminTab === 'products' ? 'active' : ''}`} onClick={() => setActiveAdminTab('products')}>
                         <span><i className="fa-solid fa-boxes-stacked"></i> คลังสินค้า</span>
-                        <span className="admin-badge" style={{ backgroundColor: "var(--primary)", color: "#090d16" }}>{products.length}</span>
+                        {unreadProductsCount > 0 && <span className="admin-badge" style={{ backgroundColor: "var(--primary)", color: "#090d16" }}>{unreadProductsCount}</span>}
                     </div>
                     <div className={`admin-menu-item ${activeAdminTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveAdminTab('orders')}>
                         <span><i className="fa-solid fa-receipt"></i> บิลคำสั่งซื้อ</span>
-                        <span className="admin-badge" style={{ backgroundColor: "var(--secondary)", color: "#090d16" }}>{orders.length}</span>
+                        {unreadOrdersCount > 0 && <span className="admin-badge" style={{ backgroundColor: "var(--secondary)", color: "#090d16" }}>{unreadOrdersCount}</span>}
                     </div>
                     <div className={`admin-menu-item ${activeAdminTab === 'chats' ? 'active' : ''}`} onClick={() => setActiveAdminTab('chats')}>
                         <span><i className="fa-solid fa-comments"></i> โต๊ะสนทนาแชท</span>
@@ -2687,7 +2994,10 @@ export default function App() {
                     </div>
                     <div className={`admin-menu-item ${activeAdminTab === 'promo_codes' ? 'active' : ''}`} onClick={() => setActiveAdminTab('promo_codes')}>
                         <span><i className="fa-solid fa-ticket"></i> สร้างโค้ดรับพ้อย</span>
-                        <span className="admin-badge" style={{ backgroundColor: "#10b881", color: "#090d16" }}>{promoCodes.length}</span>
+                        {unreadPromoCodesCount > 0 && <span className="admin-badge" style={{ backgroundColor: "#10b881", color: "#090d16" }}>{unreadPromoCodesCount}</span>}
+                    </div>
+                    <div className={`admin-menu-item ${activeAdminTab === 'promotions' ? 'active' : ''}`} onClick={() => setActiveAdminTab('promotions')}>
+                        <span><i className="fa-solid fa-tags"></i> จัดการโปรโมชั่น</span>
                     </div>
                     <div className="dropdown-divider"></div>
                     <a href="#/" className="admin-menu-item" style={{ color: "var(--text-muted)" }}>
@@ -2988,58 +3298,12 @@ export default function App() {
 
                     {activeAdminTab === 'promo_codes' && (
                         <div>
-                            <h2 style={{ marginBottom: "20px" }}><i className="fa-solid fa-ticket"></i> จัดการโค้ดรับพ้อย (เครดิตฟรี)</h2>
-                            
-                            <form onSubmit={handleAdminCreatePromoCode} style={{
-                                backgroundColor: "var(--surface)",
-                                padding: "20px",
-                                borderRadius: "var(--radius-md)",
-                                border: "1px solid var(--border)",
-                                marginBottom: "24px",
-                                maxWidth: "600px"
-                            }}>
-                                <h3 style={{ fontSize: "1.1rem", marginBottom: "16px" }}><i className="fa-solid fa-plus-circle"></i> สร้างโค้ดรับพ้อยใหม่</h3>
-                                
-                                <div style={{ display: "flex", gap: "16px", marginBottom: "16px", flexWrap: "wrap" }}>
-                                    <div style={{ flex: 1, minWidth: "200px" }} className="form-group">
-                                        <label>โค้ดรับพ้อย (ภาษาอังกฤษ/ตัวเลข)</label>
-                                        <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
-                                            <input 
-                                                type="text" 
-                                                id="admin-promo-code" 
-                                                required 
-                                                placeholder="เช่น VOUCHER100" 
-                                                style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none" }}
-                                            />
-                                            <button 
-                                                type="button" 
-                                                className="btn btn-outline btn-sm"
-                                                onClick={() => {
-                                                    const rand = "PB-" + Math.floor(1000 + Math.random() * 9000) + "-" + Math.floor(1000 + Math.random() * 9000);
-                                                    if (document.getElementById("admin-promo-code")) {
-                                                        document.getElementById("admin-promo-code").value = rand;
-                                                    }
-                                                }}
-                                                style={{ whiteSpace: "nowrap" }}
-                                            >
-                                                สุ่มโค้ด
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div style={{ width: "150px" }} className="form-group">
-                                        <label>จำนวนพ้อย (บาท)</label>
-                                        <input 
-                                            type="number" 
-                                            id="admin-promo-points" 
-                                            required 
-                                            min="1" 
-                                            placeholder="100" 
-                                            style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none", marginTop: "6px" }}
-                                        />
-                                    </div>
-                                </div>
-                                <button type="submit" className="btn btn-primary"><i className="fa-solid fa-plus"></i> ยืนยันสร้างโค้ด</button>
-                            </form>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                                <h2><i className="fa-solid fa-ticket"></i> จัดการโค้ดรับพ้อย (กรณีเติมเงินไม่เข้า)</h2>
+                                <button className="btn btn-primary btn-sm" style={{ backgroundColor: "#10b881", borderColor: "#10b881" }} onClick={() => setShowPromoCodeFormModal(true)}>
+                                    <i className="fa-solid fa-plus-circle"></i> สร้างโค้ดรับพ้อยใหม่
+                                </button>
+                            </div>
 
                             <div style={{
                                 backgroundColor: "var(--surface)",
@@ -3105,6 +3369,91 @@ export default function App() {
                                                         >
                                                             <i className="fa-solid fa-trash"></i> ลบ
                                                         </button>
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeAdminTab === 'promotions' && (
+                        <div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                                <h2><i className="fa-solid fa-tags"></i> จัดการโปรโมชั่นหน้าหลัก</h2>
+                                <button className="btn btn-primary btn-sm" onClick={() => { setEditingPromo(null); setShowPromoFormModal(true); }}>
+                                    <i className="fa-solid fa-plus-circle"></i> เพิ่มโปรโมชั่นใหม่
+                                </button>
+                            </div>
+
+                            <div style={{
+                                backgroundColor: "var(--surface)",
+                                borderRadius: "var(--radius-md)",
+                                border: "1px solid var(--border)",
+                                overflow: "hidden"
+                            }}>
+                                <table className="admin-table" style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                                    <thead>
+                                        <tr style={{ borderBottom: "2px solid var(--border)", backgroundColor: "rgba(0,0,0,0.15)" }}>
+                                            <th style={{ padding: "12px 16px" }}>ไอคอน</th>
+                                            <th style={{ padding: "12px 16px" }}>ป้ายชื่อกลุ่ม</th>
+                                            <th style={{ padding: "12px 16px" }}>ชื่อสินค้า</th>
+                                            <th style={{ padding: "12px 16px" }}>ราคา</th>
+                                            <th style={{ padding: "12px 16px" }}>ราคาเต็ม (ขีดฆ่า)</th>
+                                            <th style={{ padding: "12px 16px" }}>สถานะ</th>
+                                            <th style={{ padding: "12px 16px" }}>จัดการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {promotions.length === 0 ? (
+                                            <tr>
+                                                <td colSpan="7" style={{ padding: "30px", textAlign: "center", color: "var(--text-muted)" }}>ยังไม่มีโปรโมชั่นสินค้าในระบบ</td>
+                                            </tr>
+                                        ) : (
+                                            promotions.map(promo => (
+                                                <tr key={promo.id} style={{ borderBottom: "1px solid var(--border)" }}>
+                                                    <td style={{ padding: "12px 16px" }}>
+                                                        <span style={{ fontSize: "1.2rem" }}>
+                                                            {renderPromoIcon(promo.icon, promo.iconColor)}
+                                                        </span>
+                                                    </td>
+                                                    <td style={{ padding: "12px 16px", fontWeight: "600", color: "var(--primary)" }}>{promo.category}</td>
+                                                    <td style={{ padding: "12px 16px", fontWeight: "600" }}>{promo.name}</td>
+                                                    <td style={{ padding: "12px 16px", color: "var(--primary)", fontWeight: "600" }}>{promo.price.toLocaleString()} ฿</td>
+                                                    <td style={{ padding: "12px 16px", textDecoration: "line-through", color: "var(--text-muted)" }}>
+                                                        {promo.originalPrice ? `${promo.originalPrice.toLocaleString()} ฿` : "-"}
+                                                    </td>
+                                                    <td style={{ padding: "12px 16px" }}>
+                                                        {promo.isActive ? (
+                                                            <span className="badge" style={{ backgroundColor: "rgba(16, 185, 129, 0.15)", color: "#10b881", padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" }}>กำลังแสดงผล</span>
+                                                        ) : (
+                                                            <span className="badge" style={{ backgroundColor: "rgba(239, 68, 68, 0.15)", color: "#ef4444", padding: "4px 8px", borderRadius: "4px", fontSize: "0.75rem" }}>ปิดใช้งาน</span>
+                                                        )}
+                                                    </td>
+                                                    <td style={{ padding: "12px 16px" }}>
+                                                        <div style={{ display: "flex", gap: "8px" }}>
+                                                            <button 
+                                                                type="button"
+                                                                className="btn btn-outline btn-xs"
+                                                                onClick={() => {
+                                                                    setEditingPromo(promo);
+                                                                    setShowPromoFormModal(true);
+                                                                }}
+                                                                style={{ borderColor: "rgba(6, 182, 212, 0.3)", color: "var(--primary)" }}
+                                                            >
+                                                                <i className="fa-solid fa-edit"></i> แก้ไข
+                                                            </button>
+                                                            <button 
+                                                                type="button"
+                                                                className="btn btn-outline btn-xs" 
+                                                                onClick={() => handleAdminDeletePromotion(promo.id)}
+                                                                style={{ borderColor: "rgba(239, 68, 68, 0.3)", color: "#ef4444" }}
+                                                            >
+                                                                <i className="fa-solid fa-trash"></i> ลบ
+                                                            </button>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             ))
@@ -3303,7 +3652,9 @@ export default function App() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onFocus={() => { if (!route.startsWith('#/products')) window.location.hash = "#/products"; }}
                             />
-                            <button><i className="fa-solid fa-magnifying-glass"></i></button>
+                            <button onClick={() => { if (!route.startsWith('#/products')) window.location.hash = "#/products"; }} aria-label="Search">
+                                <i className="fa-solid fa-magnifying-glass"></i>
+                            </button>
                         </div>
 
                         {currentUser && (
@@ -3973,6 +4324,177 @@ export default function App() {
                         </div>
                     </div>
                 )
+            )}
+
+            {/* Admin Add/Edit Promotion Modal Overlay */}
+            {showPromoFormModal && (
+                <div className="modal-overlay active" onClick={(e) => { if (e.target.classList.contains('modal-overlay')) { setShowPromoFormModal(false); setEditingPromo(null); } }}>
+                    <div className="modal-card" style={{ maxWidth: "550px", maxHeight: "90vh", overflowY: "auto", textAlign: "left" }}>
+                        <button type="button" className="modal-close-btn" onClick={() => { setShowPromoFormModal(false); setEditingPromo(null); }}><i className="fa-solid fa-xmark"></i></button>
+                        
+                        <form onSubmit={(e) => { handleAdminCreateOrUpdatePromotion(e); setShowPromoFormModal(false); }}>
+                            <span className="product-category" style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--primary)", textTransform: "uppercase" }}>
+                                <i className="fa-solid fa-tags"></i> {editingPromo ? "แก้ไขข้อมูลโปรโมชั่น" : "เพิ่มโปรโมชั่นสินค้าใหม่"}
+                            </span>
+                            <h3 style={{ fontSize: "1.3rem", margin: "6px 0 16px 0", lineHeight: 1.4 }}>
+                                {editingPromo ? "แก้ไขรายละเอียดโปรโมชั่นหลัก" : "สร้างการ์ดโปรโมชั่นใหม่แสดงที่หน้าหลัก"}
+                            </h3>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                                <div className="form-group">
+                                    <label>หมวดหมู่ / ป้ายชื่อ (เช่น DISCORD Promotion)</label>
+                                    <input 
+                                        type="text" 
+                                        id="admin-promo-category" 
+                                        required 
+                                        placeholder="เช่น DISCORD Promotion" 
+                                        style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none", marginTop: "6px" }}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>ชื่อสินค้าโปรโมชั่น</label>
+                                    <input 
+                                        type="text" 
+                                        id="admin-promo-name" 
+                                        required 
+                                        placeholder="เช่น Nitro Boost (1 ปี)" 
+                                        style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none", marginTop: "6px" }}
+                                    />
+                                </div>
+
+                                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
+                                    <div style={{ flex: 1, minWidth: "150px" }} className="form-group">
+                                        <label>ราคาลดแล้ว (บาท)</label>
+                                        <input 
+                                            type="number" 
+                                            id="admin-promo-price" 
+                                            required 
+                                            min="0" 
+                                            placeholder="1290" 
+                                            style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none", marginTop: "6px" }}
+                                        />
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: "150px" }} className="form-group">
+                                        <label>ราคาเต็ม (บาท - มีขีดฆ่า, ปล่อยว่างได้)</label>
+                                        <input 
+                                            type="number" 
+                                            id="admin-promo-original-price" 
+                                            min="0" 
+                                            placeholder="1490" 
+                                            style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none", marginTop: "6px" }}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
+                                    <div style={{ flex: 1, minWidth: "150px" }} className="form-group">
+                                        <label>ประเภทไอคอน</label>
+                                        <select 
+                                            id="admin-promo-icon"
+                                            style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none", marginTop: "6px" }}
+                                        >
+                                            <option value="discord">Discord</option>
+                                            <option value="fivem">FiveM</option>
+                                            <option value="steam">Steam</option>
+                                            <option value="netflix">Netflix</option>
+                                            <option value="others">อื่น ๆ (ดาว)</option>
+                                        </select>
+                                    </div>
+                                    <div style={{ width: "120px" }} className="form-group">
+                                        <label>สีไอคอน / สีราคา</label>
+                                        <input 
+                                            type="color" 
+                                            id="admin-promo-icon-color" 
+                                            defaultValue="#5865f2"
+                                            style={{ width: "100%", height: "40px", padding: "2px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", cursor: "pointer", marginTop: "6px" }}
+                                        />
+                                    </div>
+                                    <div style={{ display: "flex", alignItems: "center", minWidth: "120px", marginTop: "20px" }} className="form-group">
+                                        <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "0.9rem" }}>
+                                            <input type="checkbox" id="admin-promo-active" defaultChecked />
+                                            เปิดใช้งาน (Active)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{ display: "flex", gap: "12px", marginTop: "24px", borderTop: "1px solid var(--border)", paddingTop: "16px", justifyContent: "flex-end" }}>
+                                <button type="button" className="btn btn-outline" onClick={() => { setShowPromoFormModal(false); setEditingPromo(null); }}>
+                                    ยกเลิก
+                                </button>
+                                <button type="submit" className="btn btn-primary">
+                                    <i className="fa-solid fa-save"></i> บันทึกข้อมูล
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Admin Add Promo Code Modal Overlay */}
+            {showPromoCodeFormModal && (
+                <div className="modal-overlay active" onClick={(e) => { if (e.target.classList.contains('modal-overlay')) setShowPromoCodeFormModal(false); }}>
+                    <div className="modal-card" style={{ maxWidth: "500px", maxHeight: "90vh", overflowY: "auto", textAlign: "left" }}>
+                        <button type="button" className="modal-close-btn" onClick={() => setShowPromoCodeFormModal(false)}><i className="fa-solid fa-xmark"></i></button>
+                        
+                        <form onSubmit={async (e) => { await handleAdminCreatePromoCode(e); setShowPromoCodeFormModal(false); }}>
+                            <span className="product-category" style={{ fontSize: "0.8rem", fontWeight: 600, color: "#10b881", textTransform: "uppercase" }}>
+                                <i className="fa-solid fa-ticket"></i> สร้างโค้ดรับพ้อยใหม่ (กรณีเติมไม่เข้า)
+                            </span>
+                            <h3 style={{ fontSize: "1.3rem", margin: "6px 0 16px 0", lineHeight: 1.4 }}>
+                                สร้างรหัสโค้ดเติมเงินส่งให้ลูกค้าตามยอดเงินที่ระบบเติมพ้อยไม่เข้า
+                            </h3>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                                <div className="form-group">
+                                    <label>รหัสโค้ดเติมเงิน (ภาษาอังกฤษ/ตัวเลข)</label>
+                                    <div style={{ display: "flex", gap: "8px", marginTop: "6px" }}>
+                                        <input 
+                                            type="text" 
+                                            id="admin-promo-code" 
+                                            required 
+                                            placeholder="เช่น VOUCHER100" 
+                                            style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none" }}
+                                        />
+                                        <button 
+                                            type="button" 
+                                            className="btn btn-outline btn-sm"
+                                            onClick={() => {
+                                                const rand = "PB-" + Math.floor(1000 + Math.random() * 9000) + "-" + Math.floor(1000 + Math.random() * 9000);
+                                                if (document.getElementById("admin-promo-code")) {
+                                                    document.getElementById("admin-promo-code").value = rand;
+                                                }
+                                            }}
+                                            style={{ whiteSpace: "nowrap" }}
+                                        >
+                                            สุ่มโค้ด
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label>จำนวนเงิน/พ้อยที่เติมให้ลูกค้า (บาท)</label>
+                                    <input 
+                                        type="number" 
+                                        id="admin-promo-points" 
+                                        required 
+                                        min="1" 
+                                        placeholder="100" 
+                                        style={{ width: "100%", padding: "10px 12px", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", backgroundColor: "var(--bg-app)", color: "var(--text-main)", fontSize: "0.85rem", outline: "none", marginTop: "6px" }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div style={{ display: "flex", gap: "12px", marginTop: "24px", borderTop: "1px solid var(--border)", paddingTop: "16px", justifyContent: "flex-end" }}>
+                                <button type="button" className="btn btn-outline" onClick={() => setShowPromoCodeFormModal(false)}>
+                                    ยกเลิก
+                                </button>
+                                <button type="submit" className="btn btn-primary" style={{ backgroundColor: "#10b881", borderColor: "#10b881" }}>
+                                    <i className="fa-solid fa-plus-circle"></i> ยืนยันสร้างโค้ด
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             )}
 
             {/* Dynamic Toast Notifications */}
