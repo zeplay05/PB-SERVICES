@@ -2015,7 +2015,7 @@ select option {
     bottom: 0;
     background-color: rgba(15, 23, 42, 0.4);
     backdrop-filter: blur(4px);
-    z-index: 500;
+    z-index: 100000;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2715,19 +2715,18 @@ select option {
 .admin-chat-desk {
     display: grid;
     grid-template-columns: 240px 1fr;
-    gap: 20px;
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    height: 480px;
+    height: 560px;
     overflow: hidden;
 }
 
 .admin-chat-content-wrapper {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    overflow: hidden;
     min-width: 0;
-    flex-grow: 1;
+    min-height: 0;
 }
 
 .admin-chat-back-btn {
@@ -2852,6 +2851,9 @@ select option {
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow: hidden;
+    min-height: 0;
+    flex: 1 1 0;
 }
 
 .admin-chat-header {
@@ -2865,7 +2867,8 @@ select option {
 }
 
 .admin-chat-body {
-    flex-grow: 1;
+    flex: 1 1 0;
+    min-height: 0;
     overflow-y: auto;
     padding: 16px;
     background-color: var(--bg-app);
@@ -2881,6 +2884,7 @@ select option {
     gap: 8px;
     align-items: center;
     background-color: var(--surface);
+    flex-shrink: 0;
 }
 .admin-chat-input input {
     flex-grow: 1;
@@ -3154,6 +3158,31 @@ select option {
         color: #94a3b8;
         padding: 0;
     }
+    /* Expanded mobile search state */
+    .search-box.mobile-search-open {
+        width: 200px;
+        border-color: var(--primary);
+        padding: 0 8px;
+        gap: 6px;
+        transition: width 0.25s ease;
+    }
+    .search-box.mobile-search-open input {
+        display: block;
+        flex-grow: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: var(--text-main);
+        font-size: 0.85rem;
+        padding: 0;
+        height: 100%;
+        min-width: 0;
+    }
+    .search-box.mobile-search-open button {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+    }
 }
 
 @media (max-width: 576px) {
@@ -3163,6 +3192,9 @@ select option {
     .search-box {
         width: 38px;
         height: 38px;
+    }
+    .search-box.mobile-search-open {
+        width: 180px;
     }
     .user-wallet {
         padding: 0 8px;

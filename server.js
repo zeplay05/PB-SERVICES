@@ -172,7 +172,7 @@ app.post("/api/verify-slip", upload.single("slip"), async (req, res) => {
               ref_number:
                 "SIM-" + Math.floor(1000000000 + Math.random() * 9000000000),
               sender: `นายทดสอบ จำลอง (${username})`,
-              receiver: "DUCKDUCK STORE",
+              receiver: "PB SERVICES",
             },
           };
           succeeded = true;
@@ -197,7 +197,7 @@ app.post("/api/verify-slip", upload.single("slip"), async (req, res) => {
             ref_number:
               "SIM-" + Math.floor(1000000000 + Math.random() * 9000000000),
             sender: `นายทดสอบ จำลอง (Offline - ${username})`,
-            receiver: "DUCKDUCK STORE",
+            receiver: "PB SERVICES",
           },
         };
         succeeded = true;

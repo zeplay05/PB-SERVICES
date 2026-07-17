@@ -302,7 +302,7 @@ const DEFAULT_CHATS = {
 
 const DEFAULT_ORDERS = [
     {
-        orderId: "X24-92837",
+        orderId: "PB-92837",
         username: "user",
         items: [
             { id: "prod-robux-1", name: "Robux 500 Package (แถมฟรี VIP Pass)", price: 150, qty: 1 }
@@ -312,7 +312,7 @@ const DEFAULT_ORDERS = [
         status: "Completed"
     },
     {
-        orderId: "X24-18239",
+        orderId: "PB-18239",
         username: "user",
         items: [
             { id: "prod-discord-1", name: "Discord Nitro Classic (1 เดือน)", price: 99, qty: 2 }
@@ -653,10 +653,10 @@ export default function App() {
     const [orders, setOrders] = useState(() => {
         const stored = loadStoredJson("x24_orders", DEFAULT_ORDERS);
         return stored.map(order => {
-            if (order.orderId && !order.orderId.startsWith("X24-")) {
-                const match = order.orderId.match(/[a-zA-Z]+-(.+)/);
+            if (order.orderId && !order.orderId.startsWith("PB-")) {
+                const match = order.orderId.match(/[a-zA-Z0-9]+-(.+)/);
                 const suffix = match ? match[1] : order.orderId;
-                return { ...order, orderId: "X24-" + suffix };
+                return { ...order, orderId: "PB-" + suffix };
             }
             return order;
         });
@@ -808,6 +808,55 @@ export default function App() {
 
     // Mobile Nav links toggle
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+
+    // Admin chat input controlled state
+    const [adminChatInput, setAdminChatInput] = useState('');
+    const adminChatImageFileRef = useRef(null);
+    const [adminChatImagePreview, setAdminChatImagePreview] = useState(null);
+
+    const handleAdminChatImageChange = (e) => {
+        const file = e.target.files?.[0];
+        if (adminChatImagePreview) {
+            URL.revokeObjectURL(adminChatImagePreview);
+        }
+        if (file) {
+            if (!file.type.startsWith("image/")) {
+                showToast("กรุณาเลือกไฟล์รูปภาพเท่านั้น", "warning");
+                e.target.value = "";
+                setAdminChatImagePreview(null);
+                return;
+            }
+            const previewUrl = URL.createObjectURL(file);
+            setAdminChatImagePreview(previewUrl);
+        } else {
+            setAdminChatImagePreview(null);
+        }
+    };
+
+    // Client chat input controlled state
+    const [clientChatInput, setClientChatInput] = useState('');
+    const clientChatImageFileRef = useRef(null);
+    const [clientChatImagePreview, setClientChatImagePreview] = useState(null);
+
+    const handleClientChatImageChange = (e) => {
+        const file = e.target.files?.[0];
+        if (clientChatImagePreview) {
+            URL.revokeObjectURL(clientChatImagePreview);
+        }
+        if (file) {
+            if (!file.type.startsWith("image/")) {
+                showToast("กรุณาเลือกไฟล์รูปภาพเท่านั้น", "warning");
+                e.target.value = "";
+                setClientChatImagePreview(null);
+                return;
+            }
+            const previewUrl = URL.createObjectURL(file);
+            setClientChatImagePreview(previewUrl);
+        } else {
+            setClientChatImagePreview(null);
+        }
+    };
 
     // Refs
     const chatFeedRef = useRef(null);
@@ -836,27 +885,27 @@ export default function App() {
 
     // Save DB state to LocalStorage whenever they change
     useEffect(() => {
-        localStorage.setItem("x24_users", JSON.stringify(users));
+        localStorage.setItem("PB_users", JSON.stringify(users));
     }, [users]);
 
     useEffect(() => {
-        localStorage.setItem("x24_products", JSON.stringify(products));
+        localStorage.setItem("PB_products", JSON.stringify(products));
     }, [products]);
 
     useEffect(() => {
-        localStorage.setItem("x24_orders", JSON.stringify(orders));
+        localStorage.setItem("PB_orders", JSON.stringify(orders));
     }, [orders]);
 
     useEffect(() => {
-        localStorage.setItem("x24_chats", JSON.stringify(chats));
+        localStorage.setItem("PB_chats", JSON.stringify(chats));
     }, [chats]);
 
     useEffect(() => {
-        localStorage.setItem("x24_delivery_notifications", JSON.stringify(deliveryNotifications));
+        localStorage.setItem("PB_delivery_notifications", JSON.stringify(deliveryNotifications));
     }, [deliveryNotifications]);
 
     useEffect(() => {
-        localStorage.setItem("x24_promotions", JSON.stringify(promotions));
+        localStorage.setItem("PB_promotions", JSON.stringify(promotions));
     }, [promotions]);
 
     // Update admin custom image states on product edit modal load
@@ -958,6 +1007,18 @@ export default function App() {
         }
     }, [route, donateChannel, selectedDonateAmount]);
 
+    // Auto-redirect from landing page if user is already logged in
+    useEffect(() => {
+        const path = route.split('?')[0];
+        if ((path === '#/' || path === '') && currentUser) {
+            if (currentUser.role === 'admin') {
+                window.location.hash = "#/admin";
+            } else {
+                window.location.hash = "#/home";
+            }
+        }
+    }, [route, currentUser]);
+
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -967,29 +1028,29 @@ export default function App() {
     // Multi-tab Storage events synchronization listener
     useEffect(() => {
         const handleStorageEvent = (e) => {
-            if (e.key === "x24_chats" || e.key === "x24_chat_update_time") {
-                const data = loadStoredJson("x24_chats", DEFAULT_CHATS);
+            if (e.key === "PB_chats" || e.key === "PB_chat_update_time") {
+                const data = loadStoredJson("PB_chats", DEFAULT_CHATS);
                 setChats(data);
 
                 // Alert client of new messages
-                if (localStorage.getItem("x24_unread_client") === "1" && !chatOpen) {
+                if (localStorage.getItem("PB_unread_client") === "1" && !chatOpen) {
                     setUnreadClient(true);
                 }
             }
-            if (e.key === "x24_current_user") {
-                setCurrentUser(loadStoredJson("x24_current_user", null));
+            if (e.key === "PB_current_user") {
+                setCurrentUser(loadStoredJson("PB_current_user", null));
             }
-            if (e.key === "x24_users") {
-                setUsers(loadStoredJson("x24_users", DEFAULT_USERS));
+            if (e.key === "PB_users") {
+                setUsers(loadStoredJson("PB_users", DEFAULT_USERS));
             }
-            if (e.key === "x24_products") {
-                setProducts(loadStoredJson("x24_products", DEFAULT_PRODUCTS));
+            if (e.key === "PB_products") {
+                setProducts(loadStoredJson("PB_products", DEFAULT_PRODUCTS));
             }
-            if (e.key === "x24_orders") {
-                setOrders(loadStoredJson("x24_orders", DEFAULT_ORDERS));
+            if (e.key === "PB_orders") {
+                setOrders(loadStoredJson("PB_orders", DEFAULT_ORDERS));
             }
-            if (e.key === "x24_promotions") {
-                setPromotions(loadStoredJson("x24_promotions", DEFAULT_PROMOTIONS));
+            if (e.key === "PB_promotions") {
+                setPromotions(loadStoredJson("PB_promotions", DEFAULT_PROMOTIONS));
             }
         };
 
@@ -1121,20 +1182,40 @@ export default function App() {
                 return;
             }
 
-            if (file.size > 2 * 1024 * 1024) {
-                reject(new Error("ไฟล์รูปภาพต้องมีขนาดไม่เกิน 2MB"));
+            if (file.size > 10 * 1024 * 1024) {
+                reject(new Error("ไฟล์รูปภาพต้องมีขนาดไม่เกิน 10MB"));
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = () => resolve({
-                type: file.type,
-                name: file.name,
-                size: file.size,
-                dataUrl: reader.result
-            });
-            reader.onerror = () => reject(new Error("อ่านไฟล์รูปภาพไม่สำเร็จ"));
-            reader.readAsDataURL(file);
+            const img = new window.Image();
+            const objectUrl = URL.createObjectURL(file);
+            img.onload = () => {
+                URL.revokeObjectURL(objectUrl);
+                const MAX_DIM = 800;
+                let w = img.width;
+                let h = img.height;
+                if (w > MAX_DIM || h > MAX_DIM) {
+                    if (w > h) { h = Math.round(h * MAX_DIM / w); w = MAX_DIM; }
+                    else { w = Math.round(w * MAX_DIM / h); h = MAX_DIM; }
+                }
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, w, h);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.72);
+                resolve({
+                    type: 'image/jpeg',
+                    name: file.name,
+                    size: dataUrl.length,
+                    dataUrl
+                });
+            };
+            img.onerror = () => {
+                URL.revokeObjectURL(objectUrl);
+                reject(new Error("อ่านไฟล์รูปภาพไม่สำเร็จ"));
+            };
+            img.src = objectUrl;
         });
     };
 
@@ -1239,7 +1320,7 @@ export default function App() {
 
             // Log new Order
             const newOrder = {
-                orderId: "X24-" + Math.floor(10000 + Math.random() * 90000),
+                orderId: "PB-" + Math.floor(10000 + Math.random() * 90000),
                 username: currentUser.username,
                 items: cart.map(i => {
                     const prodInDb = products.find(p => p.id === i.product.id);
@@ -1318,7 +1399,7 @@ export default function App() {
             try {
                 const formData = new FormData();
                 formData.append("slip", slipFile);
-                formData.append("amount", selectedDonateAmount);
+                formData.append("amount", Number(selectedDonateAmount) || 0);
                 formData.append("username", currentUser.username);
 
                 const response = await fetch("/api/verify-slip", {
@@ -1329,7 +1410,7 @@ export default function App() {
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    const addAmt = result.amount || selectedDonateAmount;
+                    const addAmt = Number(result.amount || selectedDonateAmount) || 0;
                     let successMsg = `เติมเงินสำเร็จ ${addAmt} บาท ผ่าน PromptPay QR!`;
                     if (result.savedToDb) {
                         successMsg += ` (บันทึกข้อมูลลง Supabase สำเร็จ)`;
@@ -1343,7 +1424,7 @@ export default function App() {
 
                     // Add Refill log to orders
                     const topupOrder = {
-                        orderId: "X24-" + Math.floor(10000 + Math.random() * 90000),
+                        orderId: "PB-" + Math.floor(10000 + Math.random() * 90000),
                         username: currentUser.username,
                         items: [
                             { id: "refill", name: `เติมเงินผ่าน ${donateChannel.toUpperCase()} (สลิปจริง)`, price: addAmt, qty: 1 }
@@ -1414,13 +1495,13 @@ export default function App() {
             // Simulate processing delay then add balance
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            const addAmt = selectedDonateAmount;
+            const addAmt = Number(selectedDonateAmount) || 0;
             const refNumber = "TM-" + voucherCode.slice(0, 8).toUpperCase();
 
             setCurrentUser(prev => ({ ...prev, balance: prev.balance + addAmt }));
 
             const topupOrder = {
-                orderId: "X24-" + Math.floor(10000 + Math.random() * 90000),
+                orderId: "PB-" + Math.floor(10000 + Math.random() * 90000),
                 username: currentUser.username,
                 items: [{ id: "refill", name: `เติมเงินผ่าน TrueMoney Gift (${refNumber})`, price: addAmt, qty: 1 }],
                 totalPrice: addAmt,
@@ -1491,7 +1572,7 @@ export default function App() {
 
                             // Add log to orders
                             const topupOrder = {
-                                orderId: "X24-" + Math.floor(10000 + Math.random() * 90000),
+                                orderId: "PB-" + Math.floor(10000 + Math.random() * 90000),
                                 username: currentUser.username,
                                 items: [{ id: "promo_code", name: `ใช้งานโค้ดรับพ้อย: ${codeInput}`, price: addAmt, qty: 1 }],
                                 totalPrice: addAmt,
@@ -1526,15 +1607,12 @@ export default function App() {
     };
 
     // Client Chat Message Submission
-
     const handleClientSendMsg = async (e) => {
         e.preventDefault();
         if (!currentUser) return;
 
-        const input = document.getElementById("chat-message-input");
-        const fileInput = document.getElementById("chat-image-input");
-        const text = input?.value.trim();
-        const imageFile = fileInput?.files?.[0];
+        const text = clientChatInput.trim();
+        const imageFile = clientChatImageFileRef.current?.files?.[0];
         if (!text && !imageFile) return;
 
         let attachment = null;
@@ -1545,9 +1623,7 @@ export default function App() {
             return;
         }
 
-        const user = currentUser.username;
-        const thread = chats[user] || [];
-
+        const user = currentUser.username.toLowerCase();
         const newMsg = {
             sender: "user",
             text: text,
@@ -1555,11 +1631,19 @@ export default function App() {
             timestamp: Date.now()
         };
 
+        // Update local chats state immediately for instant feedback
+        setChats(prev => {
+            const updated = { ...prev };
+            updated[user] = [...(updated[user] || []), newMsg];
+            return updated;
+        });
+
         await insertSupabaseChat(user, text, attachment, false);
         localStorage.setItem("x24_unread_admin_" + user, "1");
 
-        if (input) input.value = '';
-        if (fileInput) fileInput.value = '';
+        setClientChatInput('');
+        setClientChatImagePreview(null);
+        if (clientChatImageFileRef.current) clientChatImageFileRef.current.value = '';
 
         // Mock assistant auto reply in 6 seconds if admin tab isn't open
         simulateBotReply(user, text || "ส่งรูปภาพประกอบ");
@@ -1569,13 +1653,32 @@ export default function App() {
         setTimeout(async () => {
             const remoteChats = await fetchChatsFromSupabase();
             if (remoteChats) {
-                const thread = remoteChats[username] || [];
+                const userKey = username.toLowerCase();
+                const thread = remoteChats[userKey] || [];
                 const last = thread[thread.length - 1];
 
-                if (last && last.sender === "user") {
+                // Prevent spamming the auto-reply by checking if the thread already has one
+                const hasAutoReply = thread.some(msg => msg.text && msg.text.includes("[ระบบตอบกลับอัตโนมัติ]"));
+
+                if (last && last.sender === "user" && !hasAutoReply) {
+                    const replyText = `[ระบบตอบกลับอัตโนมัติ] ขอบคุณสำหรับข้อความ: "${text}" ขณะนี้เจ้าหน้าที่ได้รับเรื่องแล้ว จะรีบเข้ามาตอบแชทโดยเร็วที่สุดค่ะ`;
+                    const newMsg = {
+                        sender: "admin",
+                        text: replyText,
+                        attachment: null,
+                        timestamp: Date.now()
+                    };
+
+                    // Update locally as well
+                    setChats(prev => {
+                        const updated = { ...prev };
+                        updated[userKey] = [...(updated[userKey] || []), newMsg];
+                        return updated;
+                    });
+
                     await insertSupabaseChat(
-                        username,
-                        `[ระบบตอบกลับอัตโนมัติ] ขอบคุณสำหรับข้อความ: "${text}" ขณะนี้เจ้าหน้าที่ได้รับเรื่องแล้ว จะรีบเข้ามาตอบแชทโดยเร็วที่สุดค่ะ`,
+                        userKey,
+                        replyText,
                         null,
                         true
                     );
@@ -1587,9 +1690,22 @@ export default function App() {
     // Client Chat ticket creation
     const handleClientCreateTicket = async () => {
         if (!currentUser) return;
-        const user = currentUser.username;
+        const user = currentUser.username.toLowerCase();
         const welcomeText = "ยินดีต้อนรับเข้าสู่ PB SERVICES Live Support! เจ้าหน้าที่ได้รับตั๋วสนทนาของท่านแล้ว กรุณาพิมพ์ทิ้งคำถามหรือข้อสงสัยไว้ได้เลยค่ะ";
         
+        const newMsg = {
+            sender: "system",
+            text: welcomeText,
+            attachment: null,
+            timestamp: Date.now()
+        };
+
+        setChats(prev => {
+            const updated = { ...prev };
+            updated[user] = [...(updated[user] || []), newMsg];
+            return updated;
+        });
+
         await insertSupabaseChat(user, welcomeText, null, false);
         localStorage.setItem("x24_unread_admin_" + user, "1");
         showToast("เปิดตั๋วติดต่อแอดมินสำเร็จแล้วค่ะ");
@@ -1598,10 +1714,10 @@ export default function App() {
     // Client Chat ticket close/delete
     const handleClientCloseChat = async () => {
         if (!currentUser) return;
-        const user = currentUser.username;
+        const user = currentUser.username.toLowerCase();
         if (window.confirm("คุณต้องการปิดแชทนี้และลบประวัติการสนทนาทั้งหมดในระบบหรือไม่? (ข้อมูลจะหายไปทั้งหมด)")) {
             try {
-                await fetch(`${SUPABASE_URL}/rest/v1/chats?username=eq.${user.toLowerCase()}`, {
+                await fetch(`${SUPABASE_URL}/rest/v1/chats?username=eq.${user}`, {
                     method: "DELETE",
                     headers: supabaseHeaders
                 });
@@ -1648,10 +1764,8 @@ export default function App() {
         e.preventDefault();
         if (!activeChatThread) return;
 
-        const input = document.getElementById("admin-message-input");
-        const fileInput = document.getElementById("admin-image-input");
-        const text = input?.value.trim();
-        const imageFile = fileInput?.files?.[0];
+        const text = adminChatInput.trim();
+        const imageFile = adminChatImageFileRef.current?.files?.[0];
         if (!text && !imageFile) return;
 
         let attachment = null;
@@ -1662,11 +1776,28 @@ export default function App() {
             return;
         }
 
-        // Insert to Supabase as admin reply
-        await insertSupabaseChat(activeChatThread, text, attachment, true);
+        const username = activeChatThread.toLowerCase();
+        const newMsg = {
+            sender: "admin",
+            text: text,
+            attachment,
+            timestamp: Date.now()
+        };
 
-        if (input) input.value = '';
-        if (fileInput) fileInput.value = '';
+        // Update local chats state immediately for instant feedback
+        setChats(prev => {
+            const updated = { ...prev };
+            updated[username] = [...(updated[username] || []), newMsg];
+            return updated;
+        });
+
+        // Insert to Supabase as admin reply
+        await insertSupabaseChat(username, text, attachment, true);
+
+        // Clear controlled inputs
+        setAdminChatInput('');
+        setAdminChatImagePreview(null);
+        if (adminChatImageFileRef.current) adminChatImageFileRef.current.value = '';
     };
 
     // Clean admin chat history
@@ -2031,7 +2162,7 @@ export default function App() {
                     </div>
                     <div className="products-grid">
                         {featured.map(p => (
-                            <ProductCard key={p.id} product={p} />
+                            <ProductCard key={p.id} product={p} getProductStock={getProductStock} setActiveDetailProduct={setActiveDetailProduct} handleAddToCart={handleAddToCart} />
                         ))}
                     </div>
                 </section>
@@ -2068,90 +2199,7 @@ export default function App() {
         );
     };
 
-    // Product Card Sub-Component
-    const ProductCard = ({ product }) => {
-        const stock = getProductStock(product);
-        const openProductDetail = () => setActiveDetailProduct(product);
-        const [btnHover, setBtnHover] = useState(false);
-        const originalPrice = product.originalPrice || Math.round(product.price / 0.7);
-
-        return (
-            <div
-                className="product-card"
-                role="button"
-                tabIndex="0"
-                onClick={openProductDetail}
-                onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        openProductDetail();
-                    }
-                }}
-            >
-                {product.tag && (
-                    <span className={`product-tag ${product.tag === 'hot' ? 'tag-hot' : product.tag === 'new' ? 'tag-new' : ''}`}>
-                        {product.tag.toUpperCase()}
-                    </span>
-                )}
-                <div className="product-thumb">
-                    {product.imageUrl ? (
-                        <img src={product.imageUrl} alt={product.name} className="product-image" />
-                    ) : (
-                        <ProductSVG type={product.svgType} />
-                    )}
-                </div>
-                <div className="product-body">
-                    <span className="product-category">
-                        {product.category === 'discord' ? 'DISCORD' :
-                            product.category === 'fivem' ? 'FIVEM' :
-                                product.category === 'app-premium' ? 'APP PREMIUM' :
-                                    product.category === 'others' ? 'สินค้าอื่นๆ' :
-                                        (product.category ? product.category.toUpperCase() : '')}
-                    </span>
-                    <h3 className="product-title" style={{ height: "auto", minHeight: "22px", marginBottom: "4px" }}>{product.name}</h3>
-                    
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "8px 0 12px 0" }}>
-                        <span style={{ fontSize: "1.25rem", fontWeight: "700", color: "#ef4444" }}>{product.price}฿</span>
-                        <span style={{ fontSize: "0.85rem", textDecoration: "line-through", color: "var(--text-muted)" }}>{originalPrice} ฿</span>
-                        <span style={{ fontSize: "0.72rem", backgroundColor: "#ef4444", color: "#fff", padding: "2px 6px", borderRadius: "4px", fontWeight: "bold" }}>-30%</span>
-                    </div>
-
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleAddToCart(product);
-                        }}
-                        disabled={stock <= 0}
-                        style={{
-                            backgroundColor: btnHover ? "rgba(6, 182, 212, 0.2)" : "rgba(6, 182, 212, 0.1)",
-                            color: "var(--primary)",
-                            border: "none",
-                            width: "100%",
-                            padding: "10px",
-                            borderRadius: "8px",
-                            fontWeight: "600",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            gap: "8px",
-                            cursor: stock <= 0 ? "not-allowed" : "pointer",
-                            transition: "all 0.2s"
-                        }}
-                        onMouseEnter={() => setBtnHover(true)}
-                        onMouseLeave={() => setBtnHover(false)}
-                    >
-                        <span>สั่งซื้อ</span>
-                        <i className="fa-solid fa-cart-plus"></i>
-                    </button>
-
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "12px", borderTop: "1px dashed var(--border)", paddingTop: "8px" }}>
-                        <i className="fa-solid fa-box" style={{ fontSize: "0.85rem" }}></i>
-                        <span>คงเหลือ {stock} ชิ้น</span>
-                    </div>
-                </div>
-            </div>
-        );
-    };
+    // ProductCard component definition moved to the bottom of the file to preserve stable reference.
 
     // 2. PRODUCTS LIST VIEW
     const ProductsView = () => {
@@ -2242,7 +2290,7 @@ export default function App() {
                         ) : (
                             <div className="products-grid">
                                 {list.map(p => (
-                                    <ProductCard key={p.id} product={p} />
+                                    <ProductCard key={p.id} product={p} getProductStock={getProductStock} setActiveDetailProduct={setActiveDetailProduct} handleAddToCart={handleAddToCart} />
                                 ))}
                             </div>
                         )}
@@ -2253,144 +2301,7 @@ export default function App() {
     };
 
     // 3. PURCHASE HISTORY VIEW
-    const HistoryView = () => {
-        if (!currentUser) {
-            return (
-                <div className="history-layout" style={{ textAlign: "center", padding: "60px 20px" }}>
-                    <i className="fa-solid fa-clock-rotate-left" style={{ fontSize: "3.5rem", color: "var(--text-light)", marginBottom: "16px" }}></i>
-                    <h2>ประวัติการสั่งซื้อของคุณ</h2>
-                    <p style={{ color: "var(--text-muted)", marginBottom: "20px" }}>กรุณาเข้าสู่ระบบก่อนเพื่อตรวจสอบประวัติคำสั่งซื้อรายการบัตรเติมเกม/ของรางวัลต่างๆ</p>
-                    <button className="btn btn-primary" onClick={() => setAuthModal('login')}>เข้าสู่ระบบ / สมัครสมาชิก</button>
-                </div>
-            );
-        }
-
-        const userOrders = orders.filter(o => o.username === currentUser.username);
-        const [visibleCodes, setVisibleCodes] = useState({});
-
-        return (
-            <div className="history-layout">
-                <div className="history-header">
-                    <h2><i className="fa-solid fa-receipt" style={{ color: "var(--primary)" }}></i> ประวัติการสั่งซื้อสินค้า</h2>
-                    <p>ตรวจสอบและยืนยันข้อมูลรายการสั่งซื้อ/ประวัติบิลชำระเงินของบัญชีคุณ</p>
-                </div>
-
-                {userOrders.length === 0 ? (
-                    <div className="no-history-state">
-                        <i className="fa-solid fa-receipt"></i>
-                        <h3>ยังไม่มีประวัติการซื้อสินค้า</h3>
-                        <p>คุณยังไม่ได้เลือกสั่งซื้อรายการสินค้าใดๆ บนร้านค้าเลย</p>
-                        <a href="#/products" className="btn btn-primary btn-sm" style={{ marginTop: "16px" }}>ไปเลือกช้อปสินค้ากันเลย</a>
-                    </div>
-                ) : (
-                    <div className="table-responsive">
-                        <table className="invoice-table">
-                            <thead>
-                                <tr>
-                                    <th>เลขใบเสร็จ</th>
-                                    <th>รายการสินค้า</th>
-                                    <th>ยอดชำระ</th>
-                                    <th>วันที่สั่งซื้อ</th>
-                                    <th>สถานะ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {userOrders.map(ord => (
-                                    <tr key={ord.orderId}>
-                                        <td className="invoice-id">{ord.orderId}</td>
-                                        <td className="invoice-items">
-                                            {ord.items.map((it, idx) => {
-                                                const hasCodes = it.deliveredItems && it.deliveredItems.length > 0;
-                                                const toggleKey = `${ord.orderId}-${idx}`;
-                                                const isVisible = !!visibleCodes[toggleKey];
-
-                                                return (
-                                                    <div key={idx} style={{ marginBottom: "8px" }}>
-                                                        <div style={{ fontWeight: "500", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                                                            <span>{it.name} ({it.qty} ชิ้น)</span>
-                                                            {hasCodes && (
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => setVisibleCodes(prev => ({ ...prev, [toggleKey]: !prev[toggleKey] }))}
-                                                                    style={{
-                                                                        background: "none",
-                                                                        border: "none",
-                                                                        color: "var(--primary)",
-                                                                        fontSize: "0.75rem",
-                                                                        cursor: "pointer",
-                                                                        padding: "2px 6px",
-                                                                        borderRadius: "4px",
-                                                                        backgroundColor: "rgba(6, 182, 212, 0.1)",
-                                                                        display: "inline-flex",
-                                                                        alignItems: "center",
-                                                                        gap: "4px"
-                                                                    }}
-                                                                >
-                                                                    <i className={`fa-solid ${isVisible ? 'fa-eye-slash' : 'fa-key'}`}></i>
-                                                                    {isVisible ? 'ซ่อนรหัส' : 'ดูรหัสสินค้า'}
-                                                                </button>
-                                                            )}
-                                                        </div>
-
-                                                        {hasCodes && isVisible && (
-                                                            <div style={{ marginTop: "6px" }}>
-                                                                <div style={{ color: "var(--primary)", fontWeight: "600", fontSize: "0.74rem", marginBottom: "4px", paddingLeft: "2px" }}>ข้อมูลจัดส่งสินค้า:</div>
-                                                                {it.deliveredItems.map((code, cidx) => {
-                                                                    const isUrl = code.startsWith('http://') || code.startsWith('https://');
-                                                                    const parts = !isUrl ? code.split(':') : [];
-
-                                                                    if (parts.length >= 2) {
-                                                                        return (
-                                                                            <div key={cidx} style={{ padding: "10px 12px", backgroundColor: "rgba(0,0,0,0.25)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", fontSize: "0.82rem", marginBottom: cidx < it.deliveredItems.length - 1 ? "8px" : 0 }}>
-                                                                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                                                        <span style={{ color: "var(--text-muted)", fontSize: "0.76rem" }}>1. อีเมลสินค้า:</span>
-                                                                                        <strong style={{ fontFamily: "monospace", color: "var(--text-main)", userSelect: "all", cursor: "pointer" }} title="คลิกเพื่อคัดลอก">{parts[0]}</strong>
-                                                                                    </div>
-                                                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                                                        <span style={{ color: "var(--text-muted)", fontSize: "0.76rem" }}>2. รหัสผ่านสินค้า:</span>
-                                                                                        <strong style={{ fontFamily: "monospace", color: "var(--secondary)", userSelect: "all", cursor: "pointer" }} title="คลิกเพื่อคัดลอก">{parts.slice(1).join(':')}</strong>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        );
-                                                                    } else {
-                                                                        return (
-                                                                            <div key={cidx} style={{ padding: "10px 12px", backgroundColor: "rgba(0,0,0,0.25)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", fontSize: "0.82rem", marginBottom: cidx < it.deliveredItems.length - 1 ? "8px" : 0 }}>
-                                                                                <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                                                        <span style={{ color: "var(--text-muted)", fontSize: "0.76rem" }}>{isUrl ? "1. ลิงก์รับสินค้า:" : "1. อีเมลสินค้า (หรือคีย์):"}</span>
-                                                                                        <strong style={{ fontFamily: "monospace", color: "var(--text-main)", userSelect: "all", cursor: "pointer", maxWidth: "160px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={code}>{code}</strong>
-                                                                                    </div>
-                                                                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                                                                        <span style={{ color: "var(--text-muted)", fontSize: "0.76rem" }}>2. รหัสผ่านของสินค้า:</span>
-                                                                                        <strong style={{ fontFamily: "monospace", color: "var(--text-light)" }}>-</strong>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                        );
-                                                                    }
-                                                                })}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
-                                        </td>
-                                        <td>{ord.totalPrice.toFixed(2)} ฿</td>
-                                        <td>{new Date(ord.date).toLocaleString('th-TH')}</td>
-                                        <td>
-                                            <span className="status-badge completed"><i className="fa-solid fa-circle-check"></i> สำเร็จ</span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-        );
-    };
+    // HistoryView component definition moved to bottom of file.
 
     // 4. DONATE & TOPUP VIEW
     const DonateView = () => {
@@ -2444,8 +2355,12 @@ export default function App() {
                                 type="number"
                                 placeholder="ระบุจำนวนเงินอื่นๆ..."
                                 min="20"
-                                value={selectedDonateAmount}
-                                onChange={(e) => setSelectedDonateAmount(parseInt(e.target.value) || 0)}
+                                step="any"
+                                value={selectedDonateAmount === 0 || selectedDonateAmount === '' ? '' : selectedDonateAmount}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    setSelectedDonateAmount(val === '' ? '' : Number(val));
+                                }}
                             />
                         </div>
                     )}
@@ -2483,7 +2398,7 @@ export default function App() {
                                 </div>
                                 <div className="payment-details-box">
                                     <p style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}>สแกนจ่ายผ่านแอปธนาคารใดก็ได้ฟรีค่าธรรมเนียม</p>
-                                    <div className="pay-amount">{(selectedDonateAmount || 0).toFixed(2)} ฿</div>
+                                    <div className="pay-amount">{(Number(selectedDonateAmount) || 0).toFixed(2)} ฿</div>
                                     <div className="countdown-timer">
                                         <i className="fa-solid fa-clock"></i> สแกนจ่ายภายใน {formatTime(timeLeft)} นาที
                                     </div>
@@ -2720,7 +2635,7 @@ export default function App() {
                                             รูปแบบ: https://gift.truemoney.com/campaign/?v=XXXXXXXX
                                         </span>
                                     </div>
-                                    <div className="pay-amount">{(selectedDonateAmount || 0).toFixed(2)} ฿</div>
+                                    <div className="pay-amount">{(Number(selectedDonateAmount) || 0).toFixed(2)} ฿</div>
                                     <div className="countdown-timer">
                                         <i className="fa-solid fa-clock"></i> ยืนยันภายใน {formatTime(timeLeft)} นาที
                                     </div>
@@ -3275,12 +3190,53 @@ export default function App() {
                                                     </div>
                                                 ))}
                                             </div>
+                                            {adminChatImagePreview && (
+                                                <div className="chat-image-preview-container" style={{
+                                                    padding: "10px 16px",
+                                                    borderTop: "1px solid var(--border)",
+                                                    backgroundColor: "rgba(0,0,0,0.15)",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "12px",
+                                                    position: "relative",
+                                                    borderBottom: "1px solid var(--border)",
+                                                    justifyContent: "space-between"
+                                                }}>
+                                                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                                                        <div style={{ position: "relative", width: "60px", height: "60px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "1px solid var(--border)", backgroundColor: "rgba(0,0,0,0.2)" }}>
+                                                            <img src={adminChatImagePreview} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                                        </div>
+                                                        <span style={{ fontSize: "0.8rem", color: "var(--text-light)" }}>รูปภาพที่จะส่งเพื่อแนบสลิป/หลักฐาน</span>
+                                                    </div>
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => {
+                                                            setAdminChatImagePreview(null);
+                                                            if (adminChatImageFileRef.current) adminChatImageFileRef.current.value = "";
+                                                        }}
+                                                        className="btn btn-outline btn-xs"
+                                                        style={{
+                                                            color: "#ef4444",
+                                                            borderColor: "rgba(239, 68, 68, 0.3)",
+                                                            padding: "4px 8px"
+                                                        }}
+                                                    >
+                                                        <i className="fa-solid fa-circle-xmark"></i> ยกเลิก
+                                                    </button>
+                                                </div>
+                                            )}
                                             <form className="admin-chat-input" onSubmit={handleAdminSendMsg}>
                                                 <label className="chat-file-btn" title="แนบรูปภาพ">
                                                     <i className="fa-solid fa-image"></i>
-                                                    <input type="file" id="admin-image-input" accept="image/*" />
+                                                    <input type="file" ref={adminChatImageFileRef} accept="image/*" onChange={handleAdminChatImageChange} />
                                                 </label>
-                                                <input type="text" id="admin-message-input" placeholder="พิมพ์ข้อความตอบกลับลูกค้า..." autoComplete="off" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="พิมพ์ข้อความตอบกลับลูกค้า..."
+                                                    autoComplete="off"
+                                                    value={adminChatInput}
+                                                    onChange={(e) => setAdminChatInput(e.target.value)}
+                                                />
                                                 <button type="submit" className="btn btn-primary"><i className="fa-solid fa-paper-plane"></i></button>
                                             </form>
                                         </div>
@@ -3472,36 +3428,36 @@ export default function App() {
         const path = route.split('?')[0];
         switch (path) {
             case "#/home":
-                return <HomeView />;
+                return HomeView();
             case "#/products":
-                return <ProductsView />;
+                return ProductsView();
             case "#/history":
-                return <HistoryView />;
+                return <HistoryView currentUser={currentUser} setAuthModal={setAuthModal} orders={orders} />;
             case "#/donate":
-                return <DonateView />;
+                return DonateView();
             case "#/contact":
-                return <ContactView />;
+                return ContactView();
             case "#/profile":
-                return <ProfileView />;
+                return ProfileView();
             case "#/admin":
-                return <AdminView />;
+                return AdminView();
             default:
-                return <HomeView />;
+                return HomeView();
         }
     };
 
     // --------------------------------------------------------------------------
     // Main HTML Rendering output (JSX mapping)
     // --------------------------------------------------------------------------
-    const isLanding = route === '#/' || route === '';
+    const isLanding = (route === '#/' || route === '') && !currentUser;
 
     if (isLanding) {
         return (
             <div style={{ minHeight: "100vh" }}>
-                <LandingView />
+                {LandingView()}
 
                 {/* Login / Register popup modal */}
-                {authModal && (
+                {authModal && !currentUser && (
                     <div className="modal-overlay active" onClick={(e) => { if (e.target.classList.contains('modal-overlay')) setAuthModal(null); }}>
                         <div className="modal-card">
                             <button className="modal-close-btn" onClick={() => setAuthModal(null)}><i className="fa-solid fa-xmark"></i></button>
@@ -3644,15 +3600,27 @@ export default function App() {
                     </nav>
 
                     <div className="nav-actions">
-                        <div className="search-box">
+                        <div className={`search-box${mobileSearchOpen ? ' mobile-search-open' : ''}`}>
                             <input
                                 type="text"
-                                placeholder="ค้นหา..."
+                                placeholder="ค้นหาสินค้า..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onFocus={() => { if (!route.startsWith('#/products')) window.location.hash = "#/products"; }}
+                                onBlur={() => { if (!searchQuery) setMobileSearchOpen(false); }}
+                                id="mobile-search-input"
                             />
-                            <button onClick={() => { if (!route.startsWith('#/products')) window.location.hash = "#/products"; }} aria-label="Search">
+                            <button
+                                onClick={() => {
+                                    if (!mobileSearchOpen) {
+                                        setMobileSearchOpen(true);
+                                        setTimeout(() => document.getElementById('mobile-search-input')?.focus(), 50);
+                                    } else {
+                                        if (!route.startsWith('#/products')) window.location.hash = "#/products";
+                                    }
+                                }}
+                                aria-label="Search"
+                            >
                                 <i className="fa-solid fa-magnifying-glass"></i>
                             </button>
                         </div>
@@ -3810,7 +3778,7 @@ export default function App() {
             </div>
 
             {/* Login / Register popup modal */}
-            {authModal && (
+            {authModal && !currentUser && (
                 <div className="modal-overlay active" onClick={(e) => { if (e.target.classList.contains('modal-overlay')) setAuthModal(null); }}>
                     <div className="modal-card">
                         <button className="modal-close-btn" onClick={() => setAuthModal(null)}><i className="fa-solid fa-xmark"></i></button>
@@ -4002,7 +3970,7 @@ export default function App() {
                         <button className="chat-panel-close" onClick={() => setChatOpen(false)}><i className="fa-solid fa-chevron-down"></i></button>
                     </div>
 
-                    {currentUser && chats[currentUser.username] && (
+                    {currentUser && chats[currentUser.username.toLowerCase()] && (
                         <div className="ticket-info-banner">
                             <span><i className="fa-solid fa-ticket"></i> รหัสตั๋ว: <strong>{currentUser.username}</strong></span>
                             <button className="btn-close-ticket" onClick={handleClientCloseChat}>
@@ -4022,7 +3990,7 @@ export default function App() {
                                 <p>กรุณา <strong>เข้าสู่ระบบ</strong> ก่อนเริ่มการสนทนา เพื่อบันทึกประวัติการแชทและให้เจ้าหน้าที่ช่วยเหลืออย่างตรงจุด</p>
                                 <button className="btn btn-primary btn-xs" onClick={() => setAuthModal('login')}>เข้าสู่ระบบ / สมัครสมาชิก</button>
                             </div>
-                        ) : !chats[currentUser.username] ? (
+                        ) : !chats[currentUser.username.toLowerCase()] ? (
                             <div className="ticket-create-panel">
                                 <i className="fa-solid fa-comments ticket-main-icon"></i>
                                 <h3>ติดต่อฝ่ายสนับสนุน (Live Support)</h3>
@@ -4037,7 +4005,7 @@ export default function App() {
                                     <p>ตั๋วติดต่อแอดมินเปิดอยู่ แชทนี้เชื่อมโยงกับแอดมินโดยตรงแล้วค่ะ</p>
                                     <span className="msg-time">เริ่มการสนทนา</span>
                                 </div>
-                                {(chats[currentUser.username] || []).map((msg, idx) => (
+                                {(chats[currentUser.username.toLowerCase()] || []).map((msg, idx) => (
                                     <div key={idx} className={`chat-bubble-msg ${msg.sender === 'user' ? 'user' : msg.sender === 'admin' ? 'support' : 'system'}`}>
                                         {msg.text && <p>{msg.text}</p>}
                                         {msg.attachment?.dataUrl && (
@@ -4052,20 +4020,61 @@ export default function App() {
                         )}
                     </div>
 
-                    {currentUser && chats[currentUser.username] && (
-                        <form className="chat-panel-input" onSubmit={handleClientSendMsg}>
-                            <label className="chat-file-btn" title="แนบรูปภาพ">
-                                <i className="fa-solid fa-image"></i>
-                                <input type="file" id="chat-image-input" accept="image/*" />
-                            </label>
-                            <input
-                                type="text"
-                                id="chat-message-input"
-                                placeholder="พิมพ์ข้อความที่นี่..."
-                                autoComplete="off"
-                            />
-                            <button type="submit" id="chat-send-btn"><i className="fa-solid fa-paper-plane"></i></button>
-                        </form>
+                    {currentUser && chats[currentUser.username.toLowerCase()] && (
+                        <>
+                            {clientChatImagePreview && (
+                                <div className="chat-image-preview-container" style={{
+                                    padding: "8px 12px",
+                                    borderTop: "1px solid var(--border)",
+                                    backgroundColor: "var(--bg-app)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                    position: "relative",
+                                    zIndex: 5,
+                                    justifyContent: "space-between",
+                                    borderBottom: "1px solid var(--border)"
+                                }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                        <div style={{ position: "relative", width: "45px", height: "45px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "1px solid var(--border)", backgroundColor: "rgba(0,0,0,0.1)" }}>
+                                            <img src={clientChatImagePreview} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                        </div>
+                                        <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>รูปภาพที่เลือกไว้เพื่อส่ง</span>
+                                    </div>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => {
+                                            setClientChatImagePreview(null);
+                                            if (clientChatImageFileRef.current) clientChatImageFileRef.current.value = "";
+                                        }}
+                                        style={{
+                                            background: "none",
+                                            border: "none",
+                                            color: "#ef4444",
+                                            cursor: "pointer",
+                                            padding: "2px 6px",
+                                            fontSize: "0.9rem"
+                                        }}
+                                    >
+                                        <i className="fa-solid fa-circle-xmark"></i> ยกเลิก
+                                    </button>
+                                </div>
+                            )}
+                            <form className="chat-panel-input" onSubmit={handleClientSendMsg}>
+                                <label className="chat-file-btn" title="แนบรูปภาพ">
+                                    <i className="fa-solid fa-image"></i>
+                                    <input type="file" ref={clientChatImageFileRef} accept="image/*" onChange={handleClientChatImageChange} />
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="พิมพ์ข้อความที่นี่..."
+                                    autoComplete="off"
+                                    value={clientChatInput}
+                                    onChange={(e) => setClientChatInput(e.target.value)}
+                                />
+                                <button type="submit" id="chat-send-btn"><i className="fa-solid fa-paper-plane"></i></button>
+                            </form>
+                        </>
                     )}
                 </div>
             </div>
@@ -4496,7 +4505,6 @@ export default function App() {
                     </div>
                 </div>
             )}
-
             {/* Dynamic Toast Notifications */}
             <div className="toast-container">
                 {toasts.map(t => (
@@ -4511,3 +4519,228 @@ export default function App() {
         </div>
     );
 }
+
+// Product Card Sub-Component (Outside App to prevent unmount/remount flickering)
+const ProductCard = ({ product, getProductStock, setActiveDetailProduct, handleAddToCart }) => {
+    const stock = getProductStock(product);
+    const openProductDetail = () => setActiveDetailProduct(product);
+    const [btnHover, setBtnHover] = useState(false);
+    const originalPrice = product.originalPrice || Math.round(product.price / 0.7);
+
+    return (
+        <div
+            className="product-card"
+            role="button"
+            tabIndex="0"
+            onClick={openProductDetail}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openProductDetail();
+                }
+            }}
+        >
+            {product.tag && (
+                <span className={`product-tag ${product.tag === 'hot' ? 'tag-hot' : product.tag === 'new' ? 'tag-new' : ''}`}>
+                    {product.tag.toUpperCase()}
+                </span>
+            )}
+            <div className="product-thumb">
+                {product.imageUrl ? (
+                    <img src={product.imageUrl} alt={product.name} className="product-image" />
+                ) : (
+                    <ProductSVG type={product.svgType} />
+                )}
+            </div>
+            <div className="product-body">
+                <span className="product-category">
+                    {product.category === 'discord' ? 'DISCORD' :
+                        product.category === 'fivem' ? 'FIVEM' :
+                            product.category === 'app-premium' ? 'APP PREMIUM' :
+                                product.category === 'others' ? 'สินค้าอื่นๆ' :
+                                    (product.category ? product.category.toUpperCase() : '')}
+                </span>
+                <h3 className="product-title" style={{ height: "auto", minHeight: "22px", marginBottom: "4px" }}>{product.name}</h3>
+                
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", margin: "8px 0 12px 0" }}>
+                    <span style={{ fontSize: "1.25rem", fontWeight: "700", color: "#ef4444" }}>{product.price}฿</span>
+                    <span style={{ fontSize: "0.85rem", textDecoration: "line-through", color: "var(--text-muted)" }}>{originalPrice} ฿</span>
+                    <span style={{ fontSize: "0.72rem", backgroundColor: "#ef4444", color: "#fff", padding: "2px 6px", borderRadius: "4px", fontWeight: "bold" }}>-30%</span>
+                </div>
+
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(product);
+                    }}
+                    disabled={stock <= 0}
+                    style={{
+                        backgroundColor: btnHover ? "rgba(6, 182, 212, 0.2)" : "rgba(6, 182, 212, 0.1)",
+                        color: "var(--primary)",
+                        border: "none",
+                        width: "100%",
+                        padding: "10px",
+                        borderRadius: "8px",
+                        fontWeight: "600",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "8px",
+                        cursor: stock <= 0 ? "not-allowed" : "pointer",
+                        transition: "all 0.2s"
+                    }}
+                    onMouseEnter={() => setBtnHover(true)}
+                    onMouseLeave={() => setBtnHover(false)}
+                >
+                    <span>สั่งซื้อ</span>
+                    <i className="fa-solid fa-cart-plus"></i>
+                </button>
+
+                <div style={{ display: "flex", alignItems: "center", justify_content: "center", gap: "6px", fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "12px", borderTop: "1px dashed var(--border)", paddingTop: "8px" }}>
+                    <i className="fa-solid fa-box" style={{ fontSize: "0.85rem" }}></i>
+                    <span>คงเหลือ {stock} ชิ้น</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Purchase History View Component (Outside App to prevent unmount/remount flickering)
+const HistoryView = ({ currentUser, setAuthModal, orders }) => {
+    if (!currentUser) {
+        return (
+            <div className="history-layout" style={{ textAlign: "center", padding: "60px 20px" }}>
+                <i className="fa-solid fa-clock-rotate-left" style={{ fontSize: "3.5rem", color: "var(--text-light)", marginBottom: "16px" }}></i>
+                <h2>ประวัติการสั่งซื้อของคุณ</h2>
+                <p style={{ color: "var(--text-muted)", marginBottom: "20px" }}>กรุณาเข้าสู่ระบบก่อนเพื่อตรวจสอบประวัติคำสั่งซื้อรายการบัตรเติมเกม/ของรางวัลต่างๆ</p>
+                <button className="btn btn-primary" onClick={() => setAuthModal('login')}>เข้าสู่ระบบ / สมัครสมาชิก</button>
+            </div>
+        );
+    }
+
+    const userOrders = orders.filter(o => o.username === currentUser.username);
+    const [visibleCodes, setVisibleCodes] = useState({});
+
+    return (
+        <div className="history-layout">
+            <div className="history-header">
+                <h2><i className="fa-solid fa-receipt" style={{ color: "var(--primary)" }}></i> ประวัติการสั่งซื้อสินค้า</h2>
+                <p>ตรวจสอบและยืนยันข้อมูลรายการสั่งซื้อ/ประวัติบิลชำระเงินของบัญชีคุณ</p>
+            </div>
+
+            {userOrders.length === 0 ? (
+                <div className="no-history-state">
+                    <i className="fa-solid fa-receipt"></i>
+                    <h3>ยังไม่มีประวัติการซื้อสินค้า</h3>
+                    <p>คุณยังไม่ได้เลือกสั่งซื้อรายการสินค้าใดๆ บนร้านค้าเลย</p>
+                    <a href="#/products" className="btn btn-primary btn-sm" style={{ marginTop: "16px" }}>ไปเลือกช้อปสินค้ากันเลย</a>
+                </div>
+            ) : (
+                <div className="table-responsive">
+                    <table className="invoice-table">
+                        <thead>
+                            <tr>
+                                <th>เลขใบเสร็จ</th>
+                                <th>รายการสินค้า</th>
+                                <th>ยอดชำระ</th>
+                                <th>วันที่สั่งซื้อ</th>
+                                <th>สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {userOrders.map(ord => (
+                                <tr key={ord.orderId}>
+                                    <td className="invoice-id">{ord.orderId}</td>
+                                    <td className="invoice-items">
+                                        {ord.items.map((it, idx) => {
+                                            const hasCodes = it.deliveredItems && it.deliveredItems.length > 0;
+                                            const toggleKey = `${ord.orderId}-${idx}`;
+                                            const isVisible = !!visibleCodes[toggleKey];
+
+                                            return (
+                                                <div key={idx} style={{ marginBottom: "8px" }}>
+                                                    <div style={{ fontWeight: "500", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                                                        <span>{it.name} ({it.qty} ชิ้น)</span>
+                                                        {hasCodes && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setVisibleCodes(prev => ({ ...prev, [toggleKey]: !prev[toggleKey] }))}
+                                                                style={{
+                                                                    background: "none",
+                                                                    border: "none",
+                                                                    color: "var(--primary)",
+                                                                    fontSize: "0.75rem",
+                                                                    cursor: "pointer",
+                                                                    padding: "2px 6px",
+                                                                    borderRadius: "4px",
+                                                                    backgroundColor: "rgba(6, 182, 212, 0.1)",
+                                                                    display: "inline-flex",
+                                                                    alignItems: "center",
+                                                                    gap: "4px"
+                                                                }}
+                                                            >
+                                                                <i className={`fa-solid ${isVisible ? 'fa-eye-slash' : 'fa-key'}`}></i>
+                                                                {isVisible ? 'ซ่อนรหัส' : 'ดูรหัสสินค้า'}
+                                                            </button>
+                                                        )}
+                                                    </div>
+
+                                                    {hasCodes && isVisible && (
+                                                        <div style={{ marginTop: "6px" }}>
+                                                            <div style={{ color: "var(--primary)", fontWeight: "600", fontSize: "0.74rem", marginBottom: "4px", paddingLeft: "2px" }}>ข้อมูลจัดส่งสินค้า:</div>
+                                                            {it.deliveredItems.map((code, cidx) => {
+                                                                const isUrl = code.startsWith('http://') || code.startsWith('https://');
+                                                                const parts = !isUrl ? code.split(':') : [];
+
+                                                                if (parts.length >= 2) {
+                                                                    return (
+                                                                        <div key={cidx} style={{ padding: "10px 12px", backgroundColor: "rgba(0,0,0,0.25)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", fontSize: "0.82rem", marginBottom: cidx < it.deliveredItems.length - 1 ? "8px" : 0 }}>
+                                                                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                                    <span style={{ color: "var(--text-muted)", fontSize: "0.76rem" }}>1. อีเมลสินค้า:</span>
+                                                                                    <strong style={{ fontFamily: "monospace", color: "var(--text-main)", userSelect: "all", cursor: "pointer" }} title="คลิกเพื่อคัดลอก">{parts[0]}</strong>
+                                                                                </div>
+                                                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                                    <span style={{ color: "var(--text-muted)", fontSize: "0.76rem" }}>2. รหัสผ่านสินค้า:</span>
+                                                                                    <strong style={{ fontFamily: "monospace", color: "var(--secondary)", userSelect: "all", cursor: "pointer" }} title="คลิกเพื่อคัดลอก">{parts.slice(1).join(':')}</strong>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                } else {
+                                                                    return (
+                                                                        <div key={cidx} style={{ padding: "10px 12px", backgroundColor: "rgba(0,0,0,0.25)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border)", fontSize: "0.82rem", marginBottom: cidx < it.deliveredItems.length - 1 ? "8px" : 0 }}>
+                                                                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                                    <span style={{ color: "var(--text-muted)", fontSize: "0.76rem" }}>{isUrl ? "1. ลิงก์รับสินค้า:" : "1. อีเมลสินค้า (หรือคีย์):"}</span>
+                                                                                    <strong style={{ fontFamily: "monospace", color: "var(--text-main)", userSelect: "all", cursor: "pointer", maxWidth: "160px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={code}>{code}</strong>
+                                                                                </div>
+                                                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                                                                    <span style={{ color: "var(--text-muted)", fontSize: "0.76rem" }}>2. รหัสผ่านของสินค้า:</span>
+                                                                                    <strong style={{ fontFamily: "monospace", color: "var(--text-light)" }}>-</strong>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                }
+                                                            })}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </td>
+                                    <td>{ord.totalPrice.toFixed(2)} ฿</td>
+                                    <td>{new Date(ord.date).toLocaleString('th-TH')}</td>
+                                    <td>
+                                        <span className="status-badge completed"><i className="fa-solid fa-circle-check"></i> สำเร็จ</span>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    );
+};
