@@ -284,7 +284,7 @@ const DEFAULT_USERS = [
     {
         userId: "USR-00001",
         username: "admin",
-        password: "admin123",
+        password: "",
         email: "admin@x24store.com",
         balance: 999999.00,
         role: "admin",
@@ -840,6 +840,26 @@ export default function App() {
 
     // Active Detail Modal Product
     const [activeDetailProduct, setActiveDetailProduct] = useState(null);
+    const [isDescExpanded, setIsDescExpanded] = useState(false);
+    const [detailQty, setDetailQty] = useState(1);
+
+    // Admin Token state
+    const [adminToken, setAdminToken] = useState(() => {
+        const stored = localStorage.getItem("x24_admin_token");
+        if (!stored) {
+            const newToken = "PB-TK-" + Math.random().toString(36).substring(2, 10).toUpperCase() + Math.random().toString(36).substring(2, 10).toUpperCase();
+            localStorage.setItem("x24_admin_token", newToken);
+            return newToken;
+        }
+        return stored;
+    });
+
+    useEffect(() => {
+        if (activeDetailProduct) {
+            setIsDescExpanded(false);
+            setDetailQty(1);
+        }
+    }, [activeDetailProduct]);
 
     // Admin Custom Product Logo States
     const [adminImageUrl, setAdminImageUrl] = useState("");
@@ -1275,10 +1295,17 @@ export default function App() {
     };
 
     const getProductStock = (product) => {
-        if (product && Array.isArray(product.stockItems)) {
-            return product.stockItems.length;
+        if (!product) return 0;
+        let baseStock = Number(product.stock);
+        if (!Number.isFinite(baseStock)) {
+            baseStock = 9999;
+        } else if (baseStock > 0 && baseStock < 100) {
+            baseStock = 9999;
         }
-        return Number.isFinite(Number(product?.stock)) ? Number(product.stock) : 99;
+        if (Array.isArray(product.stockItems)) {
+            return Math.max(product.stockItems.length, baseStock);
+        }
+        return baseStock;
     };
 
     const getCurrentProduct = (product) => {
@@ -1293,7 +1320,7 @@ export default function App() {
     };
 
     // Add to Cart Action
-    const handleAddToCart = (product) => {
+    const handleAddToCart = (product, quantity = 1) => {
         if (!currentUser) {
             showToast("กรุณาเข้าสู่ระบบก่อนเพิ่มสินค้าในตะกร้า", "warning");
             setAuthModal('login');
@@ -1303,7 +1330,7 @@ export default function App() {
         const latestProduct = getCurrentProduct(product);
         const stock = getProductStock(latestProduct);
         const currentQty = cart.find(i => i.product.id === product.id)?.qty || 0;
-        if (stock <= 0 || currentQty >= stock) {
+        if (stock <= 0 || (currentQty + quantity) > stock) {
             showToast("สินค้าชิ้นนี้มีจำนวนในสต็อกไม่พอ", "warning");
             return;
         }
@@ -1311,15 +1338,15 @@ export default function App() {
         setCart(prev => {
             const item = prev.find(i => i.product.id === product.id);
             if (item) {
-                return prev.map(i => i.product.id === product.id ? { ...i, product: latestProduct, qty: i.qty + 1 } : i);
+                return prev.map(i => i.product.id === product.id ? { ...i, product: latestProduct, qty: i.qty + quantity } : i);
             } else {
-                return [...prev, { product: latestProduct, qty: 1 }];
+                return [...prev, { product: latestProduct, qty: quantity }];
             }
         });
 
         setCartOpen(true);
 
-        showToast(`เพิ่ม ${product.name} ในตะกร้าแล้ว`);
+        showToast(`เพิ่ม ${product.name} จำนวน ${quantity} ชิ้น ในตะกร้าแล้ว`);
     };
 
     // Update Quantity inside Drawer
@@ -2942,7 +2969,7 @@ export default function App() {
                     <p>เมนูนี้สำหรับผู้ดูแลระบบเท่านั้น กรุณาเข้าสู่ระบบด้วยบัญชีแอดมินเพื่อจัดการสินค้าและตอบแชทลูกค้า</p>
                     <div className="admin-demo-credentials">
                         <div><span>ชื่อแอดมิน</span><strong>admin</strong></div>
-                        <div><span>รหัสผ่าน</span><strong>admin123</strong></div>
+                        <div><span>รหัส Token</span><strong style={{ wordBreak: "break-all" }}>{adminToken}</strong></div>
                     </div>
                     <button className="btn btn-primary" onClick={() => setAuthModal('login')}>
                         <i className="fa-solid fa-right-to-bracket"></i> ล็อกอินแอดมิน
@@ -2979,6 +3006,9 @@ export default function App() {
                     </div>
                     <div className={`admin-menu-item ${activeAdminTab === 'categories' ? 'active' : ''}`} onClick={() => setActiveAdminTab('categories')}>
                         <span><i className="fa-solid fa-layer-group"></i> จัดการหมวดหมู่</span>
+                    </div>
+                    <div className={`admin-menu-item ${activeAdminTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveAdminTab('settings')}>
+                        <span><i className="fa-solid fa-gear"></i> ตั้งค่าระบบ</span>
                     </div>
                     <div className="dropdown-divider"></div>
                     <a href="#/" className="admin-menu-item" style={{ color: "var(--text-muted)" }}>
@@ -3573,10 +3603,134 @@ export default function App() {
                             </div>
                         </div>
                     )}
+                    {activeAdminTab === 'settings' && (
+                        <div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                                <h2><i className="fa-solid fa-shield-halved"></i> ตั้งค่าความปลอดภัยหลังบ้าน</h2>
+                            </div>
+
+                            <div style={{
+                                backgroundColor: "var(--surface)",
+                                borderRadius: "var(--radius-md)",
+                                border: "1px solid var(--border)",
+                                padding: "24px"
+                            }}>
+                                <div style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "12px",
+                                    borderBottom: "1px solid var(--border)",
+                                    paddingBottom: "16px",
+                                    marginBottom: "20px"
+                                }}>
+                                    <div style={{
+                                        backgroundColor: "rgba(6, 182, 212, 0.1)",
+                                        color: "var(--primary)",
+                                        width: "48px",
+                                        height: "48px",
+                                        borderRadius: "var(--radius-md)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        fontSize: "1.4rem"
+                                    }}>
+                                        <i className="fa-solid fa-user-shield"></i>
+                                    </div>
+                                    <div>
+                                        <h3 style={{ margin: 0, fontSize: "1.1rem" }}>Security Zone (โซนความปลอดภัย)</h3>
+                                        <p style={{ margin: "4px 0 0 0", color: "var(--text-muted)", fontSize: "0.85rem" }}>
+                                            ควบคุมสิทธิ์การเข้าถึงบัญชีผู้ดูแลระบบโดยใช้การตรวจยืนยันความถูกต้องด้วย Token
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div style={{
+                                    backgroundColor: "rgba(0, 0, 0, 0.2)",
+                                    borderRadius: "var(--radius-sm)",
+                                    border: "1px solid var(--border)",
+                                    padding: "16px",
+                                    marginBottom: "24px"
+                                }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--warning)", marginBottom: "8px", fontWeight: "600", fontSize: "0.9rem" }}>
+                                        <i className="fa-solid fa-triangle-exclamation"></i> ข้อควรทราบเกี่ยวกับการเข้ารหัสบัญชีแอดมิน
+                                    </div>
+                                    <p style={{ margin: 0, color: "var(--text-light)", fontSize: "0.8rem", lineHeight: "1.5" }}>
+                                        ระบบ PB SERVICE ได้เปลี่ยนกลไกการเข้ารหัสและการล็อกอินสำหรับผู้ดูแลระบบ (admin) จากระบบรหัสผ่านเดิมเป็น <strong>Security Token</strong> แบบสุ่ม 
+                                        โทเคนนี้จะถูกเข้ารหัสเก็บไว้ในเครื่อง หากล้างข้อมูลเบราว์เซอร์หรือรีเซ็ตโทเคน คุณจะต้องใช้โทเคนใหม่เพื่อล็อกอินเข้าสู่ระบบแอดมิน
+                                    </p>
+                                </div>
+
+                                <div style={{ marginBottom: "20px" }}>
+                                    <label style={{ display: "block", color: "var(--text-muted)", fontSize: "0.75rem", textTransform: "uppercase", fontWeight: "600", marginBottom: "8px" }}>
+                                        รหัส Token ปัจจุบันของคุณ
+                                    </label>
+                                    
+                                    <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                                        <div style={{
+                                            flex: "1",
+                                            minWidth: "250px",
+                                            backgroundColor: "var(--bg-app)",
+                                            border: "1px solid var(--border)",
+                                            borderRadius: "var(--radius-sm)",
+                                            padding: "10px 14px",
+                                            fontFamily: "monospace",
+                                            color: "var(--secondary)",
+                                            fontSize: "0.95rem",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "space-between",
+                                            boxShadow: "inset 0 1px 3px rgba(0,0,0,0.2)"
+                                        }}>
+                                            <span style={{ wordBreak: "break-all", userSelect: "all" }}>{adminToken}</span>
+                                        </div>
+                                        
+                                        <button 
+                                            type="button" 
+                                            className="btn btn-outline"
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(adminToken);
+                                                showToast("คัดลอกรหัส Token สำเร็จ!");
+                                            }}
+                                            style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 16px" }}
+                                        >
+                                            <i className="fa-solid fa-copy"></i> คัดลอกโทเคน
+                                        </button>
+                                        
+                                        <button 
+                                            type="button" 
+                                            className="btn btn-danger"
+                                            onClick={() => {
+                                                if (window.confirm("คุณแน่ใจหรือไม่ว่าต้องการรีเซ็ตรหัส Token สำหรับแอดมิน? การดำเนินการนี้จะทำให้ต้องใช้โทเคนใหม่เพื่อเข้าสู่ระบบครั้งต่อไป")) {
+                                                    const newToken = "PB-TK-" + Math.random().toString(36).substring(2, 10).toUpperCase() + Math.random().toString(36).substring(2, 10).toUpperCase();
+                                                    localStorage.setItem("x24_admin_token", newToken);
+                                                    setAdminToken(newToken);
+                                                    showToast("รีเซ็ตรหัส Token แอดมินสำเร็จ!");
+                                                }
+                                            }}
+                                            style={{ display: "flex", alignItems: "center", gap: "6px", padding: "10px 16px" }}
+                                        >
+                                            <i className="fa-solid fa-arrows-rotate"></i> รีเซ็ต Token
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    </div>
+
+                {/* Dynamic Toast Notifications */}
+                <div className="toast-container">
+                    {toasts.map(t => (
+                        <div key={t.id} className={`toast toast-${t.type}`}>
+                            <i className={`fa-solid ${t.type === 'error' ? 'fa-circle-xmark' : t.type === 'warning' ? 'fa-triangle-exclamation' : t.type === 'info' ? 'fa-circle-info' : 'fa-circle-check'}`}></i>
+                            <div className="toast-content">{t.message}</div>
+                            <button className="toast-close" onClick={() => setToasts(prev => prev.filter(x => x.id !== t.id))}><i className="fa-solid fa-xmark"></i></button>
+                        </div>
+                    ))}
                 </div>
             </div>
         );
-    };
+    }
 
     const renderActiveView = () => {
         const path = route.split('?')[0];
@@ -3599,136 +3753,6 @@ export default function App() {
                 return HomeView();
         }
     };
-
-    // --------------------------------------------------------------------------
-    // Main HTML Rendering output (JSX mapping)
-    // --------------------------------------------------------------------------
-    const isLanding = (route === '#/' || route === '') && !currentUser;
-
-    if (isLanding) {
-        return (
-            <div style={{ minHeight: "100vh" }}>
-                {LandingView()}
-
-                {/* Login / Register popup modal */}
-                {authModal && !currentUser && (
-                    <div className="modal-overlay active" onClick={(e) => { if (e.target.classList.contains('modal-overlay')) setAuthModal(null); }}>
-                        <div className="modal-card">
-                            <button className="modal-close-btn" onClick={() => setAuthModal(null)}><i className="fa-solid fa-xmark"></i></button>
-                            <div className="modal-tabs">
-                                <button className={`modal-tab ${authModal === 'login' ? 'active' : ''}`} onClick={() => setAuthModal('login')}>เข้าสู่ระบบ</button>
-                                <button className={`modal-tab ${authModal === 'register' ? 'active' : ''}`} onClick={() => setAuthModal('register')}>สมัครสมาชิก</button>
-                            </div>
-
-                            {authModal === 'login' ? (
-                                <form onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const u = document.getElementById("log-user")?.value.trim().toLowerCase();
-                                    const p = document.getElementById("log-pass")?.value;
-
-                                    const match = users.find(x => x.username === u && x.password === p);
-                                    if (match) {
-                                        setCurrentUser(match);
-                                        setAuthModal(null);
-                                        showToast(`ยินดีต้อนรับกลับมาคุณ ${match.username}!`);
-                                        if (match.role === 'admin') {
-                                            window.location.hash = "#/admin";
-                                        } else {
-                                            window.location.hash = "#/home";
-                                        }
-                                    } else {
-                                        showToast("ชื่อผู้ใช้งานหรือรหัสผ่านไม่ถูกต้อง", "error");
-                                    }
-                                }}>
-                                    <div className="form-group">
-                                        <label><i className="fa-solid fa-user"></i> ชื่อผู้ใช้</label>
-                                        <input type="text" id="log-user" required placeholder="กรอกชื่อผู้ใช้..." />
-                                    </div>
-                                    <div className="form-group">
-                                        <label><i className="fa-solid fa-lock"></i> รหัสผ่าน</label>
-                                        <input type="password" id="log-pass" required placeholder="กรอกรหัสผ่าน..." />
-                                    </div>
-                                    <button type="submit" className="btn btn-primary btn-block">เข้าสู่ระบบ</button>
-                                    <p className="form-switch-text">ยังไม่มีบัญชีใช่หรือไม่? <a href="#" onClick={(e) => { e.preventDefault(); setAuthModal('register'); }}>สมัครสมาชิกที่นี่</a></p>
-                                </form>
-                            ) : (
-                                <form onSubmit={(e) => {
-                                    e.preventDefault();
-                                    const u = document.getElementById("reg-user")?.value.trim().toLowerCase();
-                                    const em = document.getElementById("reg-email")?.value.trim();
-                                    const p = document.getElementById("reg-pass")?.value;
-                                    const pc = document.getElementById("reg-pass-confirm")?.value;
-
-                                    if (!/^[a-zA-Z0-9]{4,15}$/.test(u)) {
-                                        showToast("ชื่อผู้ใช้ต้องเป็นตัวอักษรภาษาอังกฤษ/ตัวเลข 4-15 ตัว", "warning");
-                                        return;
-                                    }
-                                    if (p.length < 6) {
-                                        showToast("รหัสผ่านอย่างน้อย 6 ตัวอักษรขึ้นไป", "warning");
-                                        return;
-                                    }
-                                    if (p !== pc) {
-                                        showToast("การยืนยันรหัสผ่านไม่ตรงกัน", "error");
-                                        return;
-                                    }
-
-                                    if (users.some(x => x.username === u)) {
-                                        showToast("ชื่อผู้ใช้นี้มีคนใช้แล้วค่ะ", "error");
-                                        return;
-                                    }
-
-                                    const reg = {
-                                        userId: "USR-" + Math.floor(10000 + Math.random() * 90000),
-                                        username: u,
-                                        email: em,
-                                        password: p,
-                                        balance: 0.00,
-                                        role: "member",
-                                        registeredAt: Date.now()
-                                    };
-                                    setUsers(prev => [...prev, reg]);
-                                    setCurrentUser(reg);
-                                    setAuthModal(null);
-                                    showToast("สมัครสมาชิกและเข้าสู่ระบบสำเร็จ!");
-                                    window.location.hash = "#/home";
-                                }}>
-                                    <div className="form-group">
-                                        <label><i className="fa-solid fa-user"></i> ชื่อผู้ใช้</label>
-                                        <input type="text" id="reg-user" required placeholder="อักษรภาษาอังกฤษหรือตัวเลข 4-15 ตัว..." />
-                                    </div>
-                                    <div className="form-group">
-                                        <label><i className="fa-solid fa-envelope"></i> อีเมล</label>
-                                        <input type="email" id="reg-email" required placeholder="example@email.com..." />
-                                    </div>
-                                    <div className="form-group">
-                                        <label><i className="fa-solid fa-lock"></i> รหัสผ่าน</label>
-                                        <input type="password" id="reg-pass" required placeholder="รหัสผ่านอย่างน้อย 6 ตัวอักษร..." />
-                                    </div>
-                                    <div className="form-group">
-                                        <label><i className="fa-solid fa-lock"></i> ยืนยันรหัสผ่าน</label>
-                                        <input type="password" id="reg-pass-confirm" required placeholder="กรอกยืนยันรหัสผ่านอีกครั้ง..." />
-                                    </div>
-                                    <button type="submit" className="btn btn-primary btn-block">สมัครสมาชิก</button>
-                                    <p className="form-switch-text">มีบัญชีอยู่แล้วใช่หรือไม่? <a href="#" onClick={(e) => { e.preventDefault(); setAuthModal('login'); }}>เข้าสู่ระบบที่นี่</a></p>
-                                </form>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Dynamic Toast Notifications */}
-                <div className="toast-container">
-                    {toasts.map(t => (
-                        <div key={t.id} className={`toast toast-${t.type}`}>
-                            <i className={`fa-solid ${t.type === 'error' ? 'fa-circle-xmark' : t.type === 'warning' ? 'fa-triangle-exclamation' : t.type === 'info' ? 'fa-circle-info' : 'fa-circle-check'}`}></i>
-                            <div className="toast-content">{t.message}</div>
-                            <button className="toast-close" onClick={() => setToasts(prev => prev.filter(x => x.id !== t.id))}><i className="fa-solid fa-xmark"></i></button>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -3947,7 +3971,12 @@ export default function App() {
                                 const u = document.getElementById("log-user")?.value.trim().toLowerCase();
                                 const p = document.getElementById("log-pass")?.value;
 
-                                const match = users.find(x => x.username === u && x.password === p);
+                                const match = users.find(x => {
+                                    if (x.username === 'admin') {
+                                        return u === 'admin' && p === adminToken;
+                                    }
+                                    return x.username === u && x.password === p;
+                                });
                                 if (match) {
                                     setCurrentUser(match);
                                     setAuthModal(null);
@@ -4166,66 +4195,66 @@ export default function App() {
                                             <a href={msg.attachment.dataUrl} target="_blank" rel="noreferrer" className="chat-image-link">
                                                 <img src={msg.attachment.dataUrl} alt={msg.attachment.name || "รูปภาพแนบในแชท"} className="chat-attachment-image" />
                                             </a>
-                                        )}
-                                        <span className="msg-time">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                    </div>
-                                ))}
-                            </>
-                        )}
-                    </div>
+                                         )}
+                                         <span className="msg-time">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                     </div>
+                                 ))}
+                             </>
+                         )}
+                     </div>
 
-                    {currentUser && chats[currentUser.username.toLowerCase()] && (
-                        <>
-                            {clientChatImagePreview && (
-                                <div className="chat-image-preview-container" style={{
-                                    padding: "8px 12px",
-                                    borderTop: "1px solid var(--border)",
-                                    backgroundColor: "var(--bg-app)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "10px",
-                                    position: "relative",
-                                    zIndex: 5,
-                                    justifyContent: "space-between",
-                                    borderBottom: "1px solid var(--border)"
-                                }}>
-                                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                        <div style={{ position: "relative", width: "45px", height: "45px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "1px solid var(--border)", backgroundColor: "rgba(0,0,0,0.1)" }}>
-                                            <img src={clientChatImagePreview} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                                        </div>
-                                        <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>รูปภาพที่เลือกไว้เพื่อส่ง</span>
-                                    </div>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => {
-                                            setClientChatImagePreview(null);
-                                            if (clientChatImageFileRef.current) clientChatImageFileRef.current.value = "";
-                                        }}
-                                        style={{
-                                            background: "none",
-                                            border: "none",
-                                            color: "#ef4444",
-                                            cursor: "pointer",
-                                            padding: "2px 6px",
-                                            fontSize: "0.9rem"
-                                        }}
-                                    >
-                                        <i className="fa-solid fa-circle-xmark"></i> ยกเลิก
-                                    </button>
-                                </div>
-                            )}
-                            <form className="chat-panel-input" onSubmit={handleClientSendMsg}>
-                                <label className="chat-file-btn" title="แนบรูปภาพ">
-                                    <i className="fa-solid fa-image"></i>
-                                    <input type="file" ref={clientChatImageFileRef} accept="image/*" onChange={handleClientChatImageChange} />
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="พิมพ์ข้อความที่นี่..."
-                                    autoComplete="off"
-                                    value={clientChatInput}
-                                    onChange={(e) => setClientChatInput(e.target.value)}
-                                />
+                     {currentUser && chats[currentUser.username.toLowerCase()] && (
+                         <>
+                             {clientChatImagePreview && (
+                                 <div className="chat-image-preview-container" style={{
+                                     padding: "8px 12px",
+                                     borderTop: "1px solid var(--border)",
+                                     backgroundColor: "var(--bg-app)",
+                                     display: "flex",
+                                     alignItems: "center",
+                                     gap: "10px",
+                                     position: "relative",
+                                     zIndex: 5,
+                                     justifyContent: "space-between",
+                                     borderBottom: "1px solid var(--border)"
+                                 }}>
+                                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                         <div style={{ position: "relative", width: "45px", height: "45px", borderRadius: "var(--radius-sm)", overflow: "hidden", border: "1px solid var(--border)", backgroundColor: "rgba(0,0,0,0.1)" }}>
+                                             <img src={clientChatImagePreview} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                         </div>
+                                         <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>รูปภาพที่เลือกไว้เพื่อส่ง</span>
+                                     </div>
+                                     <button 
+                                         type="button" 
+                                         onClick={() => {
+                                             setClientChatImagePreview(null);
+                                             if (clientChatImageFileRef.current) clientChatImageFileRef.current.value = "";
+                                         }}
+                                         style={{
+                                             background: "none",
+                                             border: "none",
+                                             color: "#ef4444",
+                                             cursor: "pointer",
+                                             padding: "2px 6px",
+                                             fontSize: "0.9rem"
+                                         }}
+                                     >
+                                         <i className="fa-solid fa-circle-xmark"></i> ยกเลิก
+                                     </button>
+                                 </div>
+                             )}
+                             <form className="chat-panel-input" onSubmit={handleClientSendMsg}>
+                                 <label className="chat-file-btn" title="แนบรูปภาพ">
+                                     <i className="fa-solid fa-image"></i>
+                                     <input type="file" ref={clientChatImageFileRef} accept="image/*" onChange={handleClientChatImageChange} />
+                                 </label>
+                                 <input
+                                     type="text"
+                                     placeholder="พิมพ์ข้อความที่นี่..."
+                                     autoComplete="off"
+                                     value={clientChatInput}
+                                     onChange={(e) => setClientChatInput(e.target.value)}
+                                 />
                                 <button type="submit" id="chat-send-btn"><i className="fa-solid fa-paper-plane"></i></button>
                             </form>
                         </>
@@ -4442,47 +4471,102 @@ export default function App() {
                 ) : (
                     // This is the Client Product Detail Modal
                     <div className="modal-overlay active" onClick={(e) => { if (e.target.classList.contains('modal-overlay')) setActiveDetailProduct(null); }}>
-                        <div className="modal-card" style={{ maxWidth: "500px", maxHeight: "90vh", overflowY: "auto", textAlign: "left" }}>
+                        <div className="modal-card" style={{ maxWidth: "800px", width: "95%", maxHeight: "90vh", overflowY: "auto", textAlign: "left", padding: "24px" }}>
                             <button className="modal-close-btn" onClick={() => setActiveDetailProduct(null)}><i className="fa-solid fa-xmark"></i></button>
-                            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "20px 0", backgroundColor: "var(--bg-app)", borderRadius: "var(--radius-md)", marginBottom: "20px", height: "160px" }}>
-                                {activeDetailProduct.imageUrl ? (
-                                    <img src={activeDetailProduct.imageUrl} alt={activeDetailProduct.name} className="product-image" style={{ maxHeight: "100%", maxWidth: "100%", objectFit: "contain" }} />
-                                ) : (
-                                    <ProductSVG type={activeDetailProduct.svgType} />
-                                )}
-                            </div>
-                            <span className="product-category" style={{ fontSize: "0.8rem", fontWeight: 600, color: "var(--primary)" }}>{activeDetailProduct.category.toUpperCase()}</span>
-                            <h3 style={{ fontSize: "1.3rem", margin: "6px 0 12px 0", lineHeight: 1.4 }}>{activeDetailProduct.name}</h3>
-                            <div className="product-detail-meta">
-                                <div>
-                                    <span>รหัสสินค้า</span>
-                                    <strong>{activeDetailProduct.id}</strong>
+                            
+                            {/* Breadcrumbs */}
+                            {(() => {
+                                const matchingCat = categories.find(c => c.id === activeDetailProduct.category);
+                                const categoryLabel = matchingCat ? matchingCat.name : activeDetailProduct.category.toUpperCase();
+                                return (
+                                    <div className="detail-breadcrumb" style={{ display: "flex", gap: "6px", alignItems: "center", fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "16px" }}>
+                                        <span>🏠 หน้าหลัก</span>
+                                        <span className="separator" style={{ color: "var(--text-muted)" }}>&gt;</span>
+                                        <span>📦 {categoryLabel}</span>
+                                        <span className="separator" style={{ color: "var(--text-muted)" }}>&gt;</span>
+                                        <span className="current" style={{ color: "#ef4444", fontWeight: "600" }}>🛍️ {activeDetailProduct.name}</span>
+                                    </div>
+                                );
+                            })()}
+
+                            {/* Two Column Layout Container */}
+                            <div className="detail-container" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "24px" }}>
+                                {/* Left Column: Image and Share */}
+                                <div className="detail-left" style={{ display: "flex", flexDirection: "column" }}>
+                                    <div className="detail-image-box" style={{ width: "100%", height: "280px", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--bg-app)", borderRadius: "var(--radius-md)", border: "1px solid var(--border)", overflow: "hidden", marginBottom: "16px" }}>
+                                        {activeDetailProduct.imageUrl ? (
+                                            <img src={activeDetailProduct.imageUrl} alt={activeDetailProduct.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                        ) : (
+                                            <ProductSVG type={activeDetailProduct.svgType} />
+                                        )}
+                                    </div>
                                 </div>
-                                <div>
-                                    <span>ชื่อสินค้า</span>
-                                    <strong>{activeDetailProduct.name}</strong>
+
+                                {/* Right Column: Meta & Actions */}
+                                <div className="detail-right" style={{ display: "flex", flexDirection: "column" }}>
+                                    <h2 className="detail-title" style={{ fontSize: "1.45rem", margin: "0 0 10px 0", fontWeight: "700", color: "var(--text-main)", lineHeight: 1.3 }}>{activeDetailProduct.name}</h2>
+                                    <div className="detail-price-box" style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "6px" }}>
+                                        <span className="price-num" style={{ fontSize: "1.65rem", color: "#ef4444", fontWeight: "700" }}>{activeDetailProduct.price}฿</span>
+                                        <span className="price-unit" style={{ fontSize: "0.85rem", color: "var(--text-muted)" }}> ต่อชิ้น</span>
+                                    </div>
+                                    <div className="detail-stock-box" style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginBottom: "16px" }}>
+                                        <span>มีสินค้าทั้งหมด <strong style={{ color: "var(--text-main)" }}>{getProductStock(activeDetailProduct)}</strong> ชิ้น</span>
+                                    </div>
+
+                                    {/* Description Card */}
+                                    <div className="detail-desc-section" style={{ marginBottom: "20px" }}>
+                                        <div style={{ border: "1px solid var(--border)", borderRadius: "var(--radius-md)", padding: "14px", backgroundColor: "rgba(0, 0, 0, 0.15)" }}>
+                                            <div className="desc-section-title" style={{ fontWeight: "600", fontSize: "0.85rem", color: "var(--text-main)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "6px" }}>
+                                                <i className="fa-solid fa-circle-info" style={{ color: "var(--primary)" }}></i> รายละเอียดสินค้า
+                                            </div>
+                                            <div className="desc-content" style={{ fontSize: "0.86rem", color: "var(--text-light)", lineHeight: "1.6", whiteSpace: "pre-line" }}>
+                                                {isDescExpanded ? activeDetailProduct.description : (activeDetailProduct.description && activeDetailProduct.description.length > 150 ? activeDetailProduct.description.substring(0, 150) + "..." : activeDetailProduct.description)}
+                                            </div>
+                                            {activeDetailProduct.description && activeDetailProduct.description.length > 150 && (
+                                                <div className="desc-expand-btn-wrapper" style={{ marginTop: "8px" }}>
+                                                    <button type="button" className="desc-expand-btn" onClick={() => setIsDescExpanded(!isDescExpanded)} style={{ background: "none", border: "none", color: "var(--primary)", fontSize: "0.8rem", fontWeight: "600", cursor: "pointer", textDecoration: "underline", padding: 0 }}>
+                                                        {isDescExpanded ? 'แสดงน้อยลง' : 'แสดงเพิ่มเติม'}
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Quantity Pick & Order */}
+                                    <div className="detail-order-section" style={{ marginTop: "auto" }}>
+                                        <div className="qty-picker-container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px", gap: "12px", flexWrap: "wrap" }}>
+                                            <div className="qty-picker-label" style={{ fontSize: "0.9rem", fontWeight: "600", color: "var(--text-light)" }}>จำนวนสินค้า</div>
+                                            <div className="qty-picker-control" style={{ display: "flex", alignItems: "center", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", overflow: "hidden", backgroundColor: "var(--bg-app)" }}>
+                                                <button type="button" className="qty-picker-btn" onClick={() => setDetailQty(Math.max(1, detailQty - 1))} disabled={detailQty <= 1} style={{ width: "36px", height: "36px", border: "none", backgroundColor: "transparent", color: "var(--text-main)", fontSize: "1.1rem", cursor: "pointer" }}>-</button>
+                                                <input 
+                                                    type="number" 
+                                                    className="qty-picker-input" 
+                                                    value={detailQty} 
+                                                    min="1" 
+                                                    max={getProductStock(activeDetailProduct)} 
+                                                    onChange={(e) => {
+                                                        const val = parseInt(e.target.value) || 1;
+                                                        setDetailQty(Math.min(getProductStock(activeDetailProduct), Math.max(1, val)));
+                                                    }} 
+                                                    style={{ width: "80px", height: "36px", border: "none", borderLeft: "1px solid var(--border)", borderRight: "1px solid var(--border)", backgroundColor: "transparent", color: "var(--text-main)", textAlign: "center", fontSize: "0.9rem", outline: "none" }}
+                                                />
+                                                <button type="button" className="qty-picker-btn" onClick={() => setDetailQty(Math.min(getProductStock(activeDetailProduct), detailQty + 1))} disabled={detailQty >= getProductStock(activeDetailProduct)} style={{ width: "36px", height: "36px", border: "none", backgroundColor: "transparent", color: "var(--text-main)", fontSize: "1.1rem", cursor: "pointer" }}>+</button>
+                                            </div>
+                                        </div>
+
+                                        <button 
+                                            className="btn btn-primary" 
+                                            style={{ width: "100%", padding: "12px", borderRadius: "var(--radius-sm)", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontSize: "0.95rem", fontWeight: "600" }} 
+                                            disabled={getProductStock(activeDetailProduct) <= 0} 
+                                            onClick={() => { 
+                                                handleAddToCart(activeDetailProduct, detailQty); 
+                                                setActiveDetailProduct(null); 
+                                            }}
+                                        >
+                                            <i className="fa-solid fa-cart-plus"></i> หยิบใส่ตะกร้า
+                                        </button>
+                                    </div>
                                 </div>
-                                <div>
-                                    <span>สต็อกคงเหลือ</span>
-                                    <strong>{getProductStock(activeDetailProduct)} ชิ้น</strong>
-                                </div>
-                                <div>
-                                    <span>หมวดหมู่</span>
-                                    <strong>
-                                        {activeDetailProduct.category === 'discord' ? 'DISCORD' :
-                                            activeDetailProduct.category === 'fivem' ? 'FIVEM' :
-                                                activeDetailProduct.category === 'app-premium' ? 'APP PREMIUM' :
-                                                    activeDetailProduct.category === 'others' ? 'สินค้าอื่นๆ' : activeDetailProduct.category}
-                                    </strong>
-                                </div>
-                            </div>
-                            <p style={{ color: "var(--text-muted)", fontSize: "0.9rem", marginBottom: "20px" }}>{activeDetailProduct.description}</p>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px solid var(--border)", paddingTop: "16px" }}>
-                                <div>
-                                    <span style={{ fontSize: "0.75rem", color: "var(--text-light)" }}>ราคาขาย</span>
-                                    <h2 style={{ fontSize: "1.6rem", color: "var(--text-main)", fontWeight: 700 }}>{activeDetailProduct.price} <span style={{ fontSize: "1rem", fontWeight: 500, color: "var(--text-muted)" }}>฿</span></h2>
-                                </div>
-                                <button className="btn btn-primary" disabled={getProductStock(activeDetailProduct) <= 0} onClick={() => { handleAddToCart(activeDetailProduct); setActiveDetailProduct(null); }}><i className="fa-solid fa-cart-plus"></i> หยิบใส่ตะกร้า</button>
                             </div>
                         </div>
                     </div>

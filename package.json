@@ -1,5 +1,5 @@
 {
-  "name": "x24-store",
+  "name": "PB SERVICES",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "check-db": "node check_supabase.js",
     "server": "node server.js",
-    "dev-all": "concurrently \"npm run dev\" \"npm run server\""
+    "dev-all": "concurrently \"npm run dev\" \"npm run server\"",
+    "revert": "git checkout src/App.jsx"
   },
   "dependencies": {
     "cors": "^2.8.5",
