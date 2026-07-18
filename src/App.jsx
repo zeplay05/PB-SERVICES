@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 
+const API_URL = import.meta.env.VITE_API_URL || "";
+
 // --------------------------------------------------------------------------
 // Default Databases Seed
 // --------------------------------------------------------------------------
@@ -2247,7 +2249,7 @@ export default function App() {
 
                 <section style={{ marginBottom: "50px" }}>
                     <div className="section-header">
-                        <h2>สินค้าเเนะนำ</h2>
+                        <h2>สินค้าแนะนำ</h2>
                         <a href="#/products" className="view-all-link">ดูสินค้าทั้งหมด <i className="fa-solid fa-arrow-right"></i></a>
                     </div>
                     <div className="products-grid">
