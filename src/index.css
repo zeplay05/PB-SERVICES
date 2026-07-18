@@ -1109,11 +1109,11 @@ select option {
     justify-content: center;
     background: var(--navbar-bg);
     overflow: hidden;
-    padding: 16px;
+    padding: 0;
 }
 
 /* Card SVG graphics styling */
-.product-thumb svg {
+.product-thumb > svg {
     filter: drop-shadow(0 8px 16px rgba(0,0,0,0.1));
     transition: transform var(--transition-normal);
 }
@@ -1266,8 +1266,8 @@ select option {
     box-shadow: 0 10px 30px rgba(6, 182, 212, 0.1);
     border-color: rgba(6, 182, 212, 0.3);
 }
-.product-card:hover .product-thumb svg {
-    transform: scale(1.08) rotate(-2deg);
+.product-card:hover .product-thumb > svg {
+    transform: scale(1.08);
 }
 
 /* Empty search result states */
@@ -3770,8 +3770,19 @@ select option {
     border-radius: var(--radius-sm);
     transition: transform var(--transition-normal);
 }
+.product-thumb.has-image {
+    padding: 0;
+}
+.product-thumb.has-image .product-image {
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 0;
+}
 .product-card:hover .product-thumb .product-image {
-    transform: scale(1.08) rotate(-2deg);
+    transform: scale(1.08);
 }
 
 .cart-item-image img.product-image {

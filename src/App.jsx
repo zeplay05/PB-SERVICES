@@ -391,7 +391,7 @@ function ProductSVG({ type }) {
     switch (type) {
         case 'fivem':
             return (
-                <svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="fivemBg" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#a81141" />
@@ -402,16 +402,22 @@ function ProductSVG({ type }) {
                             <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#ffffff" floodOpacity="0.15"/>
                         </filter>
                     </defs>
-                    <rect width="80" height="80" x="10" y="10" rx="12" fill="url(#fivemBg)" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="2" />
-                    <g filter="url(#fivemShadow)" transform="translate(20, 20) scale(2.5)" fill="#ffffff">
-                        <path d="M22.4 24h-5.225c-.117 0-.455-1.127-1.026-3.375-1.982-6.909-3.124-10.946-3.417-12.12l3.37-3.325h.099c.454 1.42 2.554 7.676 6.299 18.768ZM12.342 7.084h-.048a3.382 3.385 0 0 1-.098-.492v-.098a102.619 102.715 0 0 1 3.272-3.275c.13.196.196.356.196.491v.05a140.694 140.826 0 0 1-3.322 3.324ZM5.994 10.9h-.05c.67-2.12 1.076-3.209 1.223-3.275L14.492.343c.08 0 .258.524.533 1.562zm1.37-4.014h-.05C8.813 2.342 9.612.048 9.71 0h4.495v.05a664.971 664.971 0 0 1-6.841 6.839Zm-2.69 7.874h-.05c.166-.798.554-1.418 1.174-1.855a312.918 313.213 0 0 1 5.71-5.717h.05c-.117.672-.375 1.175-.781 1.52zM1.598 24l-.098-.05c1.399-4.172 2.148-6.322 2.248-6.45l6.74-6.694v.05C10.232 11.88 8.974 16.263 6.73 24Z"/>
-                    </g>
+                    <rect width="100" height="100" x="0" y="0" fill="url(#fivemBg)" />
+                    <svg x="0" y="0" width="100" height="100" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                        <g filter="url(#fivemShadow)" transform="translate(20, 20) scale(2.5)" fill="#ffffff">
+                            <path d="M22.4 24h-5.225c-.117 0-.455-1.127-1.026-3.375-1.982-6.909-3.124-10.946-3.417-12.12l3.37-3.325h.099c.454 1.42 2.554 7.676 6.299 18.768ZM12.342 7.084h-.048a3.382 3.385 0 0 1-.098-.492v-.098a102.619 102.715 0 0 1 3.272-3.275c.13.196.196.356.196.491v.05a140.694 140.826 0 0 1-3.322 3.324ZM5.994 10.9h-.05c.67-2.12 1.076-3.209 1.223-3.275L14.492.343c.08 0 .258.524.533 1.562zm1.37-4.014h-.05C8.813 2.342 9.612.048 9.71 0h4.495v.05a664.971 664.971 0 0 1-6.841 6.839Zm-2.69 7.874h-.05c.166-.798.554-1.418 1.174-1.855a312.918 313.213 0 0 1 5.71-5.717h.05c-.117.672-.375 1.175-.781 1.52zM1.598 24l-.098-.05c1.399-4.172 2.148-6.322 2.248-6.45l6.74-6.694v.05C10.232 11.88 8.974 16.263 6.73 24Z"/>
+                        </g>
+                    </svg>
                 </svg>
             );
         case 'robux':
             return (
-                <svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
+                        <linearGradient id="rbBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#f57f17" />
+                            <stop offset="100%" stopColor="#e65100" />
+                        </linearGradient>
                         <radialGradient id="rbGradient" cx="50%" cy="40%" r="50%">
                             <stop offset="0%" stopColor="#fbc02d" />
                             <stop offset="70%" stopColor="#f57f17" />
@@ -421,17 +427,19 @@ function ProductSVG({ type }) {
                             <feDropShadow dx="0" dy="8" stdDeviation="6" floodColor="#e65100" floodOpacity="0.3" />
                         </filter>
                     </defs>
-                    <circle cx="50" cy="50" r="45" fill="rgba(251, 192, 45, 0.15)" stroke="rgba(251, 192, 45, 0.3)" strokeWidth="1" />
-                    <g filter="url(#rbShadow)">
-                        <polygon points="50,15 80,32 80,68 50,85 20,68 20,32" fill="url(#rbGradient)" />
-                        <polygon points="50,30 68,40 68,60 50,70 32,60 32,40" fill="#ffffff" opacity="0.9" />
-                        <polygon points="50,38 59,44 59,56 50,62 41,56 41,44" fill="url(#rbGradient)" />
-                    </g>
+                    <rect width="100" height="100" x="0" y="0" fill="url(#rbBg)" />
+                    <svg x="0" y="0" width="100" height="100" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                        <g filter="url(#rbShadow)">
+                            <polygon points="50,15 80,32 80,68 50,85 20,68 20,32" fill="url(#rbGradient)" />
+                            <polygon points="50,30 68,40 68,60 50,70 32,60 32,40" fill="#ffffff" opacity="0.9" />
+                            <polygon points="50,38 59,44 59,56 50,62 41,56 41,44" fill="url(#rbGradient)" />
+                        </g>
+                    </svg>
                 </svg>
             );
         case 'steam':
             return (
-                <svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="steamBg" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#101d2a" />
@@ -442,17 +450,19 @@ function ProductSVG({ type }) {
                             <stop offset="100%" stopColor="#101d2a" />
                         </linearGradient>
                     </defs>
-                    <rect width="90" height="90" x="5" y="5" rx="14" fill="url(#steamBg)" stroke="rgba(102, 192, 244, 0.15)" strokeWidth="1.5" />
-                    <circle cx="50" cy="50" r="36" fill="url(#steamCircleBg)" />
-                    <g transform="translate(20, 20) scale(3.75)">
-                        <path d="M.329 10.333A8.01 8.01 0 0 0 7.99 16C12.414 16 16 12.418 16 8s-3.586-8-8.009-8A8.006 8.006 0 0 0 0 7.468l.003.006 4.304 1.769A2.2 2.2 0 0 1 5.62 8.88l1.96-2.844-.001-.04a3.046 3.046 0 0 1 3.042-3.043 3.046 3.046 0 0 1 3.042 3.043 3.047 3.047 0 0 1-3.111 3.044l-2.804 2a2.223 2.223 0 0 1-3.075 2.11 2.22 2.22 0 0 1-1.312-1.568L.33 10.333Z" fill="#ffffff" />
-                        <path d="M4.868 12.683a1.715 1.715 0 0 0 1.318-3.165 1.7 1.7 0 0 0-1.263-.02l1.023.424a1.261 1.261 0 1 1-.97 2.33l-.99-.41a1.7 1.7 0 0 0 .882.84Zm3.726-6.687a2.03 2.03 0 0 0 2.027 2.029 2.03 2.03 0 0 0 2.027-2.029 2.03 2.03 0 0 0-2.027-2.027 2.03 2.03 0 0 0-2.027 2.027m2.03-1.527a1.524 1.524 0 1 1-.002 3.048 1.524 1.524 0 0 1 .002-3.048" fill="#ffffff" />
-                    </g>
+                    <rect width="100" height="100" x="0" y="0" fill="url(#steamBg)" />
+                    <svg x="0" y="0" width="100" height="100" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                        <circle cx="50" cy="50" r="36" fill="url(#steamCircleBg)" />
+                        <g transform="translate(20, 20) scale(3.75)">
+                            <path d="M.329 10.333A8.01 8.01 0 0 0 7.99 16C12.414 16 16 12.418 16 8s-3.586-8-8.009-8A8.006 8.006 0 0 0 0 7.468l.003.006 4.304 1.769A2.2 2.2 0 0 1 5.62 8.88l1.96-2.844-.001-.04a3.046 3.046 0 0 1 3.042-3.043 3.046 3.046 0 0 1 3.042 3.043 3.047 3.047 0 0 1-3.111 3.044l-2.804 2a2.223 2.223 0 0 1-3.075 2.11 2.22 2.22 0 0 1-1.312-1.568L.33 10.333Z" fill="#ffffff" />
+                            <path d="M4.868 12.683a1.715 1.715 0 0 0 1.318-3.165 1.7 1.7 0 0 0-1.263-.02l1.023.424a1.261 1.261 0 1 1-.97 2.33l-.99-.41a1.7 1.7 0 0 0 .882.84Zm3.726-6.687a2.03 2.03 0 0 0 2.027 2.029 2.03 2.03 0 0 0 2.027-2.029 2.03 2.03 0 0 0-2.027-2.027 2.03 2.03 0 0 0-2.027 2.027m2.03-1.527a1.524 1.524 0 1 1-.002 3.048 1.524 1.524 0 0 1 .002-3.048" fill="#ffffff" />
+                        </g>
+                    </svg>
                 </svg>
             );
         case 'discord':
             return (
-                <svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="dcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#7289da" />
@@ -462,15 +472,17 @@ function ProductSVG({ type }) {
                             <feDropShadow dx="0" dy="6" stdDeviation="6" floodColor="#5865f2" floodOpacity="0.3" />
                         </filter>
                     </defs>
-                    <rect width="80" height="80" x="10" y="10" rx="12" fill="url(#dcGrad)" stroke="rgba(88, 101, 242, 0.15)" strokeWidth="2" />
-                    <g filter="url(#dcGlow)" transform="translate(28, 28) scale(1.83)">
-                        <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" fill="#ffffff" />
-                    </g>
+                    <rect width="100" height="100" x="0" y="0" fill="url(#dcGrad)" />
+                    <svg x="0" y="0" width="100" height="100" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                        <g filter="url(#dcGlow)" transform="translate(28, 28) scale(1.83)">
+                            <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z" fill="#ffffff" />
+                        </g>
+                    </svg>
                 </svg>
             );
         case 'netflix':
             return (
-                <svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="nfGrad" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" stopColor="#141414" />
@@ -484,31 +496,32 @@ function ProductSVG({ type }) {
                             <feDropShadow dx="3" dy="3" stdDeviation="4" floodColor="#000" floodOpacity="0.6" />
                         </filter>
                     </defs>
-                    <rect width="80" height="80" x="10" y="10" rx="12" fill="url(#nfGrad)" stroke="rgba(229, 9, 20, 0.15)" strokeWidth="2" />
-                    <g filter="url(#nfShadow)" transform="translate(20, 20) scale(2.5)">
-                        {/* Left vertical bar */}
-                        <path d="M5.398 1.05V24c1.873-.225 2.81-.312 4.715-.398v-9.22z" fill="#b81d24" />
-                        {/* Right vertical bar */}
-                        <path d="M13.887 0v9.63L18.6 22.951c-.043-7.86-.004-15.913.002-22.95z" fill="#b81d24" />
-                        {/* Diagonal bar on top */}
-                        <path d="M5.398 0v.006c3.028 8.556 5.37 15.175 8.348 23.596 2.344.058 4.85.398 4.854.398-2.8-7.924-5.923-16.747-8.487-24z" fill="url(#nRedGrad)" />
-                    </g>
+                    <rect width="100" height="100" x="0" y="0" fill="url(#nfGrad)" />
+                    <svg x="0" y="0" width="100" height="100" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                        <g filter="url(#nfShadow)" transform="translate(20, 20) scale(2.5)">
+                            <path d="M5.398 1.05V24c1.873-.225 2.81-.312 4.715-.398v-9.22z" fill="#b81d24" />
+                            <path d="M13.887 0v9.63L18.6 22.951c-.043-7.86-.004-15.913.002-22.95z" fill="#b81d24" />
+                            <path d="M5.398 0v.006c3.028 8.556 5.37 15.175 8.348 23.596 2.344.058 4.85.398 4.854.398-2.8-7.924-5.923-16.747-8.487-24z" fill="url(#nRedGrad)" />
+                        </g>
+                    </svg>
                 </svg>
             );
         case 'others':
         default:
             return (
-                <svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
                         <linearGradient id="othersBg" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stopColor="#2c3e50" />
                             <stop offset="100%" stopColor="#1a252f" />
                         </linearGradient>
                     </defs>
-                    <rect width="80" height="80" x="10" y="10" rx="12" fill="url(#othersBg)" stroke="rgba(255, 255, 255, 0.08)" strokeWidth="2" />
-                    <g transform="translate(25, 25) scale(0.09765625)" fill="#ffffff">
-                        <path d="M224 0l0 64c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-64 32 0c35.3 0 64 28.7 64 64l0 128c0 5.5-.7 10.9-2 16l-252 0c-1.3-5.1-2-10.5-2-16l0-128c0-35.3 28.7-64 64-64l32 0zm96 512c-11.2 0-21.8-2.9-31-8 9.5-16.5 15-35.6 15-56l0-128c0-20.4-5.5-39.5-15-56 9.2-5.1 19.7-8 31-8l32 0 0 64c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-64 32 0c35.3 0 64 28.7 64 64l0 128c0 35.3-28.7 64-64 64l-128 0zM0 320c0-35.3 28.7-64 64-64l32 0 0 64c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-64 32 0c35.3 0 64 28.7 64 64l0 128c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 320z" />
-                    </g>
+                    <rect width="100" height="100" x="0" y="0" fill="url(#othersBg)" />
+                    <svg x="0" y="0" width="100" height="100" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                        <g transform="translate(25, 25) scale(0.09765625)" fill="#ffffff">
+                            <path d="M224 0l0 64c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-64 32 0c35.3 0 64 28.7 64 64l0 128c0 5.5-.7 10.9-2 16l-252 0c-1.3-5.1-2-10.5-2-16l0-128c0-35.3 28.7-64 64-64l32 0zm96 512c-11.2 0-21.8-2.9-31-8 9.5-16.5 15-35.6 15-56l0-128c0-20.4-5.5-39.5-15-56 9.2-5.1 19.7-8 31-8l32 0 0 64c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-64 32 0c35.3 0 64 28.7 64 64l0 128c0 35.3-28.7 64-64 64l-128 0zM0 320c0-35.3 28.7-64 64-64l32 0 0 64c0 8.8 7.2 16 16 16l32 0c8.8 0 16-7.2 16-16l0-64 32 0c35.3 0 64 28.7 64 64l0 128c0 35.3-28.7 64-64 64L64 512c-35.3 0-64-28.7-64-64L0 320z" />
+                        </g>
+                    </svg>
                 </svg>
             );
     }
@@ -532,6 +545,34 @@ const renderPromoIcon = (icon, iconColor) => {
         default:
             return <i className="fa-solid fa-star f-card-icon" style={{ color: iconColor }}></i>;
     }
+};
+
+const renderCategoryIcon = (cat) => {
+    if (cat.imageUrl) {
+        return (
+            <img 
+                src={cat.imageUrl} 
+                alt={cat.name} 
+                style={{ 
+                    width: "2rem", 
+                    height: "2rem", 
+                    objectFit: "contain", 
+                    marginBottom: "14px", 
+                    transition: "var(--transition-fast)" 
+                }} 
+                className="category-img"
+            />
+        );
+    }
+    if (cat.icon === "fivem") {
+        return (
+            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ color: cat.iconColor }}>
+                <title>FiveM</title>
+                <path d="M22.4 24h-5.225c-.117 0-.455-1.127-1.026-3.375-1.982-6.909-3.124-10.946-3.417-12.12l3.37-3.325h.099c.454 1.42 2.554 7.676 6.299 18.768ZM12.342 7.084h-.048a3.382 3.385 0 0 1-.098-.492v-.098a102.619 102.715 0 0 1 3.272-3.275c.13.196.196.356.196.491v.05a140.694 140.826 0 0 1-3.322 3.324ZM5.994 10.9h-.05c.67-2.12 1.076-3.209 1.223-3.275L14.492.343c.08 0 .258.524.533 1.562zm1.37-4.014h-.05C8.813 2.342 9.612.048 9.71 0h4.495v.05a664.971 664.971 0 0 1-6.841 6.839Zm-2.69 7.874h-.05c.166-.798.554-1.418 1.174-1.855a312.918 313.213 0 0 1 5.71-5.717h.05c-.117.672-.375 1.175-.781 1.52zM1.598 24l-.098-.05c1.399-4.172 2.148-6.322 2.248-6.45l6.74-6.694v.05C10.232 11.88 8.974 16.263 6.73 24Z"/>
+            </svg>
+        );
+    }
+    return <i className={cat.icon} style={{ color: cat.iconColor }}></i>;
 };
 
 // --------------------------------------------------------------------------
@@ -647,6 +688,20 @@ export default function App() {
         if (!stored) {
             localStorage.setItem("x24_promotions", JSON.stringify(DEFAULT_PROMOTIONS));
             return DEFAULT_PROMOTIONS;
+        }
+        return stored;
+    });
+    const [categories, setCategories] = useState(() => {
+        const DEFAULT_CATEGORIES = [
+            { id: "discord", name: "DISCORD", icon: "fa-brands fa-discord", iconColor: "#5865f2", imageUrl: "" },
+            { id: "fivem", name: "FIVEM", icon: "fivem", iconColor: "#f40552", imageUrl: "" },
+            { id: "app-premium", name: "APP PREMIUM", icon: "fa-solid fa-tv", iconColor: "#e50914", imageUrl: "" },
+            { id: "others", name: "และสินค้าอื่นๆ", icon: "fa-solid fa-boxes-stacked", iconColor: "#2a475e", imageUrl: "" }
+        ];
+        const stored = loadStoredJson("x24_categories", null);
+        if (!stored) {
+            localStorage.setItem("x24_categories", JSON.stringify(DEFAULT_CATEGORIES));
+            return DEFAULT_CATEGORIES;
         }
         return stored;
     });
@@ -2004,6 +2059,26 @@ export default function App() {
         }
     };
 
+    const handleCategorySave = (catId, newImgUrl) => {
+        const updated = categories.map(cat => cat.id === catId ? { ...cat, imageUrl: newImgUrl } : cat);
+        setCategories(updated);
+        localStorage.setItem("x24_categories", JSON.stringify(updated));
+        showToast("บันทึกข้อมูลหมวดหมู่เรียบร้อยค่ะ");
+    };
+
+    const handleCategoryImageUpload = async (e, catId) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            const attached = await readImageAttachment(file);
+            if (attached && attached.dataUrl) {
+                handleCategorySave(catId, attached.dataUrl);
+            }
+        } catch (err) {
+            showToast(err.message, "warning");
+        }
+    };
+
     const handleAdminProductDelete = (id) => {
         if (window.confirm("ยืนยันการลบสินค้าชิ้นนี้ออกจากคลัง?")) {
             setProducts(prev => prev.filter(p => p.id !== id));
@@ -2129,29 +2204,17 @@ export default function App() {
                         <a href="#/products" className="view-all-link">ดูทั้งหมด <i className="fa-solid fa-arrow-right"></i></a>
                     </div>
                     <div className="categories-grid">
-                        <div className="category-card" onClick={() => { window.location.hash = "#/products?category=discord"; }}>
-                            <i className="fa-brands fa-discord" style={{ color: "#5865f2" }}></i>
-                            <h3>DISCORD</h3>
-                            <p>ไนโตรบูสต์และกิ๊ฟการ์ดราคาถูก</p>
-                        </div>
-                        <div className="category-card" onClick={() => { window.location.hash = "#/products?category=fivem"; }}>
-                            <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style={{ color: "#f40552" }}>
-                                <title>FiveM</title>
-                                <path d="M22.4 24h-5.225c-.117 0-.455-1.127-1.026-3.375-1.982-6.909-3.124-10.946-3.417-12.12l3.37-3.325h.099c.454 1.42 2.554 7.676 6.299 18.768ZM12.342 7.084h-.048a3.382 3.385 0 0 1-.098-.492v-.098a102.619 102.715 0 0 1 3.272-3.275c.13.196.196.356.196.491v.05a140.694 140.826 0 0 1-3.322 3.324ZM5.994 10.9h-.05c.67-2.12 1.076-3.209 1.223-3.275L14.492.343c.08 0 .258.524.533 1.562zm1.37-4.014h-.05C8.813 2.342 9.612.048 9.71 0h4.495v.05a664.971 664.971 0 0 1-6.841 6.839Zm-2.69 7.874h-.05c.166-.798.554-1.418 1.174-1.855a312.918 313.213 0 0 1 5.71-5.717h.05c-.117.672-.375 1.175-.781 1.52zM1.598 24l-.098-.05c1.399-4.172 2.148-6.322 2.248-6.45l6.74-6.694v.05C10.232 11.88 8.974 16.263 6.73 24Z"/>
-                            </svg>
-                            <h3>FIVEM</h3>
-                            <p>เงินในเกม บริการต่างๆ และบัตรของขวัญ</p>
-                        </div>
-                        <div className="category-card" onClick={() => { window.location.hash = "#/products?category=app-premium"; }}>
-                            <i className="fa-solid fa-tv" style={{ color: "#e50914" }}></i>
-                            <h3>APP PREMIUM</h3>
-                            <p>แอปพลิเคชันสตรีมมิ่งและบัญชีพรีเมียม</p>
-                        </div>
-                        <div className="category-card" onClick={() => { window.location.hash = "#/products?category=others"; }}>
-                            <i className="fa-solid fa-boxes-stacked" style={{ color: "#2a475e" }}></i>
-                            <h3>และสินค้าอื่นๆ</h3>
-                            <p>คีย์เกม บัตรเติมเงิน และบริการอื่นๆ</p>
-                        </div>
+                        {categories.map(cat => (
+                            <div 
+                                key={cat.id} 
+                                className="category-card" 
+                                onClick={() => { window.location.hash = `#/products?category=${cat.id}`; }}
+                                style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
+                            >
+                                {renderCategoryIcon(cat)}
+                                <h3>{cat.name}</h3>
+                            </div>
+                        ))}
                     </div>
                 </section>
 
@@ -2914,6 +2977,9 @@ export default function App() {
                     <div className={`admin-menu-item ${activeAdminTab === 'promotions' ? 'active' : ''}`} onClick={() => setActiveAdminTab('promotions')}>
                         <span><i className="fa-solid fa-tags"></i> จัดการโปรโมชั่น</span>
                     </div>
+                    <div className={`admin-menu-item ${activeAdminTab === 'categories' ? 'active' : ''}`} onClick={() => setActiveAdminTab('categories')}>
+                        <span><i className="fa-solid fa-layer-group"></i> จัดการหมวดหมู่</span>
+                    </div>
                     <div className="dropdown-divider"></div>
                     <a href="#/" className="admin-menu-item" style={{ color: "var(--text-muted)" }}>
                         <span><i className="fa-solid fa-store"></i> กลับหน้าร้านค้า</span>
@@ -3414,6 +3480,94 @@ export default function App() {
                                                 </tr>
                                             ))
                                         )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeAdminTab === 'categories' && (
+                        <div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                                <h2><i className="fa-solid fa-layer-group"></i> จัดการหมวดหมู่สินค้า ({categories.length})</h2>
+                            </div>
+
+                            <div style={{
+                                backgroundColor: "var(--surface)",
+                                borderRadius: "var(--radius-md)",
+                                border: "1px solid var(--border)",
+                                overflow: "hidden"
+                            }}>
+                                <table className="admin-table" style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+                                    <thead>
+                                        <tr style={{ borderBottom: "2px solid var(--border)", backgroundColor: "rgba(0,0,0,0.15)" }}>
+                                            <th style={{ padding: "12px 16px" }}>หมวดหมู่</th>
+                                            <th style={{ padding: "12px 16px" }}>พรีวิวไอคอน/รูปภาพ</th>
+                                            <th style={{ padding: "12px 16px" }}>ระบุ URL รูปภาพสินค้า</th>
+                                            <th style={{ padding: "12px 16px" }}>หรืออัปโหลดรูปภาพ</th>
+                                            <th style={{ padding: "12px 16px" }}>การจัดการ</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {categories.map(cat => (
+                                            <tr key={cat.id} style={{ borderBottom: "1px solid var(--border)" }}>
+                                                <td style={{ padding: "12px 16px", fontWeight: "600", color: "var(--primary)" }}>
+                                                    {cat.name} ({cat.id})
+                                                </td>
+                                                <td style={{ padding: "12px 16px" }}>
+                                                    <div style={{ 
+                                                        width: "50px", 
+                                                        height: "50px", 
+                                                        display: "flex", 
+                                                        alignItems: "center", 
+                                                        justifyContent: "center", 
+                                                        backgroundColor: "var(--bg-app)", 
+                                                        borderRadius: "var(--radius-sm)",
+                                                        border: "1px solid var(--border)" 
+                                                    }}>
+                                                        {renderCategoryIcon(cat)}
+                                                    </div>
+                                                </td>
+                                                <td style={{ padding: "12px 16px" }}>
+                                                    <input 
+                                                        type="text" 
+                                                        value={cat.imageUrl || ""} 
+                                                        onChange={(e) => handleCategorySave(cat.id, e.target.value)}
+                                                        placeholder="https://example.com/image.png" 
+                                                        style={{ 
+                                                            width: "100%", 
+                                                            padding: "6px 10px", 
+                                                            borderRadius: "var(--radius-sm)", 
+                                                            border: "1px solid var(--border)", 
+                                                            backgroundColor: "var(--bg-app)", 
+                                                            color: "var(--text-main)", 
+                                                            fontSize: "0.8rem", 
+                                                            outline: "none" 
+                                                        }}
+                                                    />
+                                                </td>
+                                                <td style={{ padding: "12px 16px" }}>
+                                                    <input 
+                                                        type="file" 
+                                                        accept="image/*" 
+                                                        onChange={(e) => handleCategoryImageUpload(e, cat.id)}
+                                                        style={{ fontSize: "0.75rem", color: "var(--text-muted)", cursor: "pointer" }} 
+                                                    />
+                                                </td>
+                                                <td style={{ padding: "12px 16px" }}>
+                                                    {cat.imageUrl && (
+                                                        <button 
+                                                            type="button" 
+                                                            className="btn btn-outline btn-xs"
+                                                            onClick={() => handleCategorySave(cat.id, "")}
+                                                            style={{ borderColor: "rgba(239, 68, 68, 0.3)", color: "#ef4444" }}
+                                                        >
+                                                            <i className="fa-solid fa-rotate-left"></i> รีเซ็ตเป็นค่าเริ่มต้น
+                                                        </button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
                                     </tbody>
                                 </table>
                             </div>
@@ -4545,7 +4699,7 @@ const ProductCard = ({ product, getProductStock, setActiveDetailProduct, handleA
                     {product.tag.toUpperCase()}
                 </span>
             )}
-            <div className="product-thumb">
+            <div className={`product-thumb ${product.imageUrl ? 'has-image' : ''}`}>
                 {product.imageUrl ? (
                     <img src={product.imageUrl} alt={product.name} className="product-image" />
                 ) : (
@@ -4568,35 +4722,57 @@ const ProductCard = ({ product, getProductStock, setActiveDetailProduct, handleA
                     <span style={{ fontSize: "0.72rem", backgroundColor: "#ef4444", color: "#fff", padding: "2px 6px", borderRadius: "4px", fontWeight: "bold" }}>-30%</span>
                 </div>
 
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        handleAddToCart(product);
-                    }}
-                    disabled={stock <= 0}
-                    style={{
-                        backgroundColor: btnHover ? "rgba(6, 182, 212, 0.2)" : "rgba(6, 182, 212, 0.1)",
-                        color: "var(--primary)",
-                        border: "none",
-                        width: "100%",
-                        padding: "10px",
-                        borderRadius: "8px",
-                        fontWeight: "600",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: "8px",
-                        cursor: stock <= 0 ? "not-allowed" : "pointer",
-                        transition: "all 0.2s"
-                    }}
-                    onMouseEnter={() => setBtnHover(true)}
-                    onMouseLeave={() => setBtnHover(false)}
-                >
-                    <span>สั่งซื้อ</span>
-                    <i className="fa-solid fa-cart-plus"></i>
-                </button>
+                <div style={{ display: "flex", gap: "8px", width: "100%", marginTop: "auto" }}>
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            openProductDetail();
+                        }}
+                        className="btn btn-outline btn-sm"
+                        style={{
+                            flex: 1,
+                            padding: "8px 4px",
+                            fontSize: "0.85rem",
+                            height: "38px",
+                            borderColor: "rgba(6, 182, 212, 0.3)",
+                            color: "var(--primary)",
+                            fontWeight: "600",
+                            borderRadius: "8px",
+                            cursor: "pointer",
+                            transition: "all 0.2s"
+                        }}
+                    >
+                        รายละเอียด
+                    </button>
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToCart(product);
+                        }}
+                        disabled={stock <= 0}
+                        className="btn btn-primary btn-sm"
+                        style={{
+                            flex: 1,
+                            padding: "8px 4px",
+                            fontSize: "0.85rem",
+                            height: "38px",
+                            backgroundColor: stock <= 0 ? "rgba(255, 255, 255, 0.05)" : "var(--primary)",
+                            color: stock <= 0 ? "var(--text-muted)" : "var(--surface)",
+                            border: "none",
+                            fontWeight: "600",
+                            borderRadius: "8px",
+                            cursor: stock <= 0 ? "not-allowed" : "pointer",
+                            transition: "all 0.2s"
+                        }}
+                    >
+                        <span>สั่งซื้อ</span>
+                        <i className="fa-solid fa-cart-plus" style={{ fontSize: "0.8rem" }}></i>
+                    </button>
+                </div>
 
-                <div style={{ display: "flex", alignItems: "center", justify_content: "center", gap: "6px", fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "12px", borderTop: "1px dashed var(--border)", paddingTop: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", fontSize: "0.8rem", color: "var(--text-muted)", marginTop: "12px", borderTop: "1px dashed var(--border)", paddingTop: "8px" }}>
                     <i className="fa-solid fa-box" style={{ fontSize: "0.85rem" }}></i>
                     <span>คงเหลือ {stock} ชิ้น</span>
                 </div>
